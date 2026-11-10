@@ -1,0 +1,31 @@
+# lb_sunflowers_v5.py (blocchi 4x8, PH_W 1.0, P_W 4.5): run 3:01.7. Estratto del log del main.
+round 0 piantato a 11.65 finestra fino a 11.57 power 0
+fase 15 finita a 17.55 fino a 17.87 power 1194.91
+fase 14 finita a 19.42 fino a 19.37 power 2978.3
+fase 13 finita a 20.08 fino a 20.37 power 4066.67
+fase 12 finita a 21.42 fino a 21.37 power 5489.48
+fase 11 finita a 21.95 fino a 22.37 power 6015.34
+round 1 piantato a 27.32 finestra fino a 26.87 power 6359.62
+fase 15 finita a 28.69 fino a 29.07 power 7235
+fase 14 finita a 29.96 fino a 30.07 power 8676.39
+fase 13 finita a 30.82 fino a 31.07 power 9771.91
+fase 12 finita a 32.05 fino a 32.07 power 11091.09
+fase 11 finita a 32.61 fino a 33.07 power 11772.37
+round 2 piantato a 36.85 finestra fino a 37.57 power 12191.27
+fase 15 finita a 39.44 fino a 39.77 power 13152.33
+fase 14 finita a 40.84 fino a 40.77 power 14671.92
+fase 13 finita a 41.92 fino a 41.77 power 15936.58
+fase 12 finita a 42.76 fino a 42.77 power 16997.59
+fase 11 finita a 43.56 fino a 43.77 power 18065.57
+round 3 piantato a 47.75 finestra fino a 48.27 power 18109.34
+fase 15 finita a 50.07 fino a 50.47 power 18935.78
+fase 14 finita a 51.46 fino a 51.47 power 20658.61
+fase 13 finita a 52.29 fino a 52.47 power 21616.55
+fase 12 finita a 53.31 fino a 53.47 power 22986.04
+fase 11 finita a 54.39 fino a 54.47 power 24550.7
+round 12 piantato a 144.83 finestra fino a 144.57 power 76564.45
+fase 15 finita a 146.61 fino a 146.77 power 77779.18
+fase 14 finita a 147.63 fino a 147.77 power 79170.69
+fase 13 finita a 148.65 fino a 148.77 power 80282.22
+fase 12 finita a 149.61 fino a 149.77 power 81486.77
+fase 11 finita a 150.42 fino a 150.77 power 82639.77

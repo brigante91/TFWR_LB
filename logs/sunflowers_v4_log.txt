@@ -1,0 +1,19 @@
+# lb_sunflowers_v2.py v4 (colonne, PH_W 1.35, P_W 4.6, CAP 9): run 3:04.7, inviato 3:04.931. Estratto.
+round 0 piantato a 9.66 finestra fino a 11.27 power 0
+fase 15 finita a 17.87 fino a 17.92 power 1319.76
+fase 14 finita a 19.6 fino a 19.72 power 2915.7
+fase 13 finita a 21.05 fino a 21.07 power 4504.44
+fase 12 finita a 22.33 fino a 22.42 power 6021
+fase 11 finita a 23.68 fino a 23.77 power 7632.07
+round 1 piantato a 27.72 finestra fino a 28.37 power 7536.37
+fase 15 finita a 30.83 fino a 30.92 power 8859.55
+fase 14 finita a 32.18 fino a 32.27 power 10124.94
+fase 13 finita a 33.6 fino a 33.62 power 11583.16
+fase 12 finita a 34.91 fino a 34.97 power 12866.11
+fase 11 finita a 36.2 fino a 36.32 power 14226.96
+round 2 piantato a 40 finestra fino a 40.92 power 14167.13
+fase 15 finita a 43.35 fino a 43.47 power 15276.08
+fase 14 finita a 44.76 fino a 44.82 power 16726.22
+fase 13 finita a 46.08 fino a 46.17 power 18169.21
+fase 12 finita a 47.53 fino a 47.52 power 19835.71
+fase 11 finita a 48.76 fino a 48.87 power 21269.03

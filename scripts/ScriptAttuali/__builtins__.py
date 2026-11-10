@@ -1,0 +1,3549 @@
+# This file gives Python type definitions to TFWR builtins to allow editing code with Python editors.
+# Note that the games language is not Python and these definitions are only an approximation.
+
+# Contributed by @Noon, @KlingonDragon, @dieckie, @Flekay, @Zoroark-Zwart, and @Rat on the TFWR Discord server.
+# @SCD-3 on GitHub
+
+# Expose some useful types to allow for typing without using a typing import.
+# Typing imports would fail to run in-game as they are not ignored.
+# Ignore any type warnings as needed by your environment.
+# Some types are provided as private to the let file have control
+# over the regular defaults and are not commonly useful for typing most code
+
+# Notes on aliases because of TFWR functions:
+# - string -> builtins.str
+# - range_class -> builtins.range
+
+# Note: `None` is not type hinted in optional return types to reduce typing complexity due to lack of type casts. This affects these functions:
+# - `measure`
+# - `get_companion`
+# - `spawn_drone`
+# Documentation for `None` return type is available for when running the code in-game
+
+from typing import (
+    Any, Literal, Final,
+    overload, Self, Never
+)
+from collections.abc import (
+    Callable, Iterator, Iterable,
+    Sequence, Container, Collection
+)
+from types import ModuleType
+
+from builtins import (
+    bool, int, float, str as string,
+    tuple,
+
+    # If you uncomment the custom classes found below then
+    # comment this line to prevent conflicts
+    range as range_class,
+    list, set, dict
+)
+
+# Used for when the builtin type is desirable over a possible
+# redefinition using the same name
+from builtins import (
+    bool as _bool, int as _int, float as _float, range as _range,
+    tuple as _tuple, list as _list, set as _set, dict as _dict
+)
+from enum import Enum as _Enum
+
+# -------------------------------------------------------------------------------
+# Basic Types and Collections
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
+type Primitive = _bool | _int | _float | string | None
+"""
+Basic immutable types in TFWR.
+
+included:
+
+- `bool`
+- `int`
+- `float`
+- `string`
+- `None`
+"""
+
+# --------------------------------------------------
+type Enums = (
+	Entity | Entities |
+    Ground | Grounds | Hat | Hats | Item | Items |
+	Leaderboard | Leaderboards | Unlock | Unlocks
+)
+"""
+Type representing all available enums in TFWR.
+
+included:
+
+- `Direction` (`North`, `East`, `South`, `West`)
+- `Hat`, `Entity`, `Item`, `Ground`, `Leaderboard`, `Unlock`
+- `Hats`, `Entities`, `Items`, `Grounds`, `Leaderboards`, `Unlocks`
+"""
+
+# --------------------------------------------------
+type Hashable = (
+    Primitive | range_class |
+	tuple[Hashable, ...] |
+	Enums |
+	Drone[AnyTFWR]
+)
+"""
+Type representing all of the useable types for a dict key or set element in TFWR.
+
+included:
+
+- Primitives: `bool`, `int`, `float`, `string`, `None`
+- `tuple` and tuples of tuples that use a `Hashable`
+- `range_class`, `function` (hinted as `Callable`)
+- `Drone` (from `spawn_drone`)
+- Enums:
+  - `Direction` (`North`, `East`, `South`, `West`)
+  - `Hat`, `Entity`, `Item`, `Ground`, `Leaderboard`, `Unlock`
+  - `Hats`, `Entities`, `Items`, `Grounds`, `Leaderboards`, `Unlocks`
+"""
+
+# --------------------------------------------------
+type _AnyCollection = (
+	dict[Hashable, AnyTFWR] | _dict[Hashable, AnyTFWR] |
+	set[Hashable] | _set[Hashable] |
+	list[AnyTFWR] | _list[AnyTFWR] |
+	_tuple[AnyTFWR,...]
+)
+
+type AnyTFWR = (
+    Primitive |	range_class | _range |		# Python builtin    - basic types
+
+	Callable[..., AnyTFWR] | ModuleType |	# Python builtin    - functions / modules
+
+	_AnyCollection |						# Both builtins     - collection types
+
+	Direction | Enums | 					# Game builtins		- enum classes
+
+	Drone[AnyTFWR]							# Game builtins		- megafarm classes
+)
+"""
+Type representing all of the useable types in TFWR.
+
+included:
+
+- Primitives: `bool`, `int`, `float`, `string`, `None`
+- `tuple`, `list`, `dict`, `set`
+- `range_class`, `module`, `function` (hinted as `Callable`)
+- `ModuleType`,
+- `Drone` (from `spawn_drone`)
+- Enums:
+  - `Direction` (`North`, `East`, `South`, `West`)
+  - `Hat`, `Entity`, `Item`, `Ground`, `Leaderboard`, `Unlock`
+  - `Hats`, `Entities`, `Items`, `Grounds`, `Leaderboards`, `Unlocks`
+"""
+
+# --------------------------------------------------
+type AnyIterable = (
+	string | range_class | _range | _AnyCollection |
+	Entities | Grounds | Hats | Items | Leaderboards | Unlocks
+)
+"""
+Type representing all of the iterable types in TFWR.
+
+included:
+
+- `tuple`, `list`, `dict`, `set`
+- `string`, `range_class`
+- Enums:
+  - `Direction` (`North`, `East`, `South`, `West`)
+  - `Hat`, `Entity`, `Item`, `Ground`, `Leaderboard`, `Unlock`
+  - `Hats`, `Entities`, `Items`, `Grounds`, `Leaderboards`, `Unlocks`
+"""
+
+# --------------------------------------------------
+# Uncomment this class if you want additional game-specific type hints and docstrings for `dict` methods
+# This class requires the use of of the `dict()` constructor. Assigning `dict` literals (ex. `{'1':1, '1':2, '1':3}`) will cause typing conflicts with the builtin Python type `builtins.dict`
+
+# Comment out the `dict` builtins import above to prevent conflict errors.
+
+# type DictTFWR[K: Any, V: Any] = dict[K, V] | _dict[K, V]
+# """
+# This type is used to represent the custom dict type that is specific to the game and the dict type provided by Python's builtins module. It is used to help you manage custom dicts and dict literals such as `{1: "One", 2: "Two", 3: "Three"]`. You cannot assign a dict literal to the custom dict type, however.
+
+# When using the `dict` custom type below you should type hint your variables using `DictTFWR` as this will let you catch both this custom type and Python builtin type while also staying compatible with TFWR.
+
+# example:
+# ```
+# custom_dict: DictTFWR[int, string] = dict()
+# python_dict: DictTFWR[int, string] = {1:"One", 1:"Two", 3:"Three"}
+# ```
+# Makes this possible:
+# ```
+# custom_dict = python_dict
+# ```
+# """
+# class dict[K: Hashable, V: Any]():
+# 	"""
+# 	Builds an unordered collection of key-value pairs. This custom class is not assignable to `builtins.dict` from Python standard library or dict literals.
+
+# 	dict() -> new empty dictionary
+
+# 	dict(dictionary[keys, values]) -> new dictionary initialized from an existing `dictionary`
+
+# 	takes `1 + 2 * len(dictionary)` ticks to execute if a dictionary is given.
+# 	takes `1` tick to execute if no input is given.
+
+# 	Consider using `DictTFWR` to help with type hints involving dicts.
+# 	"""
+# 	def __init__(self: Self, input: DictTFWR[K, V] | None = None, /) -> None: ...
+# 	def __iter__(self: Self, /) -> Iterator[K]: ...
+# 	def __next__(self: Self, /) -> K: ...
+# 	def __getitem__(self: Self, key: K, /) -> V: ...
+# 	def __setitem__(self: Self, key: K, object: V, /) -> None: ...
+# 	def __contains__(self, compare_object: K, /) -> _bool: ...
+# 	def len(self: Self, /) -> _int:
+# 		"""
+# 		Returns the number of items in the dictionary.
+
+# 		returns the length of the dictionary.
+
+# 		takes `1` tick to execute.
+
+# 		example usage:
+
+# 		```
+# 		my_dict = {"One": 1, "Two": 2, "Three": 3}
+# 		length = my_dict.len()
+# 		print(length)
+# 		```
+
+# 		Output:
+
+# 		```
+# 		3
+# 		```
+# 		"""
+# 		...
+# 	def pop(self: Self, key: K, /) -> V:
+# 		"""
+# 		Remove the key-value pair corresponding to the `key` in the dict
+
+# 		returns the value of the removed key-value pair
+
+# 		takes `1` tick to execute.
+
+# 		example usage:
+
+# 		```
+# 		my_dict = {"One": 1, "Two": 2, "Three": 3}
+# 		print("Old Value:", my_dict.pop("One"))
+# 		print("Current Dict:", my_dict)
+# 		```
+
+# 		Output:
+
+# 		```
+# 		Old Value: 1
+# 		Current Dict: {"Two":2,"Three":3}
+# 		```
+# 		"""
+# 		...
+# 	...
+
+# --------------------------------------------------
+# Uncomment this class if you want additional game-specific type hints and docstrings for `list` methods
+# This class requires the use of of the `list()` constructor. Assigning `list` literals (ex. `[1, 2, 3]`) will cause typing conflicts with the builtin Python type `builtins.list`
+
+# Comment out the `list` builtins import above to prevent conflict errors.
+
+# type ListTFWR[V: AnyTFWR] = list[V] | _list[V]
+# """
+# This type is used to represent the custom list type that is specific to the game and the list type provided by Python's builtins module. It is used to help you manage custom lists and list literals such as `[1, 2, 3]`. You cannot assign a list literal to the custom list type, however.
+
+# When using the `list` custom type below you should type hint your variables using `ListTFWR` as this will let you catch both this custom type and Python builtin type while also staying compatible with TFWR.
+
+# example:
+# ```
+# custom_list: ListTFWR[int] = list()
+# python_list: ListTFWR[int] = [1, 1, 3]
+# ```
+# Makes this possible:
+# ```
+# custom_list = python_list
+# ```
+# """
+# class list[V: Any]():
+# 	"""
+# 	Builds an ordered sequence of values. This custom class is not assignable to `builtins.list` from Python standard library or list literals.
+
+# 	list() -> new empty list
+
+# 	list(collection: list | tuple | set | str) -> new list from the values of the provided `collection`
+
+# 	list(collection: set | dict) -> new list from the keys of the given `collection`
+
+# 	list(game_enum) -> new list from the values of an in-game enum `game_enum`
+
+# 	takes `1 + len(collection)` where `collection` is one of the above if an input is given.
+# 	takes `1` tick to execute if no input is given.
+
+# 	Consider using `ListTFWR` to help with type hints involving lists.
+# 	"""
+# 	def __init__(self: Self, input: Iterable[V] | None = None, /) -> None: ...
+# 	def __iter__(self: Self, /) -> Iterator[V]: ...
+# 	def __next__(self: Self, /) -> V: ...
+# 	def __getitem__(self: Self, index: _float, /) -> V: ...
+# 	def __setitem__(self: Self, index: _float, object: V, /) -> None: ...
+# 	def __le__(self: Self, compare_list: tuple[V,...] | ListTFWR[V], /) -> _bool: ...
+# 	def __lt__(self: Self, compare_list: tuple[V,...] | ListTFWR[V], /) -> _bool: ...
+# 	def __ge__(self: Self, compare_list: tuple[V,...] | ListTFWR[V], /) -> _bool: ...
+# 	def __gt__(self: Self, compare_list: tuple[V,...] | ListTFWR[V], /) -> _bool: ...
+# 	def __iadd__(self: Self, compare_list: ListTFWR[V], /) -> list[V]: ...
+# 	def __add__(self: Self, compare_list: ListTFWR[V], /) -> list[V]: ...
+# 	def __contains__(self, compare_object: V, /) -> _bool: ...
+# 	def append(self: Self, object: V, /) -> None:
+# 		"""
+# 		Add `object` to the end of a list provided as `given_list`.
+
+# 		takes `1` tick to execute.
+
+# 		example usage:
+
+# 		```
+# 		my_list = [1, 2, 3]
+# 		my_list.append(4)
+# 		print(my_list)
+# 		```
+
+# 		Output:
+
+# 		```
+# 		[1,2,3,4]
+# 		```
+# 		"""
+# 		...
+# 	def insert(self: Self, index: _float, object: V, /) -> None: # type: ignore
+# 		"""
+# 		Add a `object` to the specified `index` to a list provided as `given_list`.
+
+# 		takes `1 + len(list) - index` ticks to execute
+
+# 		example usage:
+
+# 		```
+# 		my_list = [1, 2, 3]
+# 		my_list.insert(1, 4)
+# 		print(my_list)
+# 		```
+
+# 		Output:
+
+# 		```
+# 		[1,4,2,3]
+# 		```
+# 		"""
+# 		...
+# 	def len(self: Self, /) -> _int:
+# 		"""
+# 		Returns the number of items in the list.
+
+# 		returns the length of the list.
+
+# 		takes `1` tick to execute.
+
+# 		example usage:
+
+# 		```
+# 		my_list = [1, 2, 3]
+# 		length = my_list.len()
+# 		print(length)
+# 		```
+
+# 		Output:
+
+# 		```
+# 		3
+# 		```
+# 		"""
+# 		...
+# 	def pop(self: Self, index: _float = -1, /) -> V: # type: ignore
+# 		"""
+# 		Remove the element corresponding to the `index` in the list. If no index is specified removes the last element in the list.
+
+# 		returns the value of the removed element
+
+# 		takes `len(list) - index` ticks to execute if an `index` is provided
+# 		takes `1` tick to execute if no `index` is provided
+
+# 		example usage:
+
+# 		```
+# 		my_list = [1, 2, 3]
+# 		print("Old Value:", my_list.pop(1))
+# 		print("Current List:", my_list)
+# 		```
+
+# 		Output:
+
+# 		```
+# 		Old Value: 2
+# 		Current List: [1,3]
+# 		```
+# 		"""
+# 		...
+# 	def remove(self: Self, object: V, /) -> None:
+# 		"""
+# 		Remove the element corresponding to the `object` in the list.
+
+# 		takes `num_comparisons + num_shifts` ticks to execute
+
+# 		example usage:
+
+# 		```
+# 		my_list = [1, 2, 3]
+# 		my_list.remove(1)
+# 		print(my_list)
+# 		```
+
+# 		Output:
+
+# 		```
+# 		[2,3]
+# 		```
+# 		"""
+# 		...
+# 	...
+
+
+# --------------------------------------------------
+# Uncomment this class if you want additional game-specific type hints and docstrings for `set` methods
+# This class requires the use of of the `set()` constructor. Assigning set literals (ex. `{1, 2, 3}`) will cause typing conflicts with the builtin Python type `builtins.set`
+
+# Comment out the `set` builtins import above to prevent conflict errors.
+
+# type SetTFWR[K: Hashable] = set[K] | _set[K]
+# """
+# This type is used to represent the custom set type that is specific to the game and the set type provided by Python's builtins module. It is used to help you manage custom sets and set literals such as `{1, 2, 3}`. You cannot assign a set literal to the custom set type, however.
+
+# When using the `set` custom type below you should type hint your variables using `SetTFWR` as this will let you catch both this custom type and Python builtin type while also staying compatible with TFWR.
+
+# example:
+# ```
+# custom_set: SetTFWR[int] = set()
+# python_set: SetTFWR[int] = {1, 1, 3}
+# ```
+# Makes this possible:
+# ```
+# custom_set = python_set
+# ```
+# """
+# class set[K: Hashable]():
+# 	"""
+# 	Builds an unordered collection of elements. This custom class is not assignable to `builtins.set` from Python standard library or set literals.
+
+# 	set() -> new empty set
+
+# 	set(collection: list | tuple | set | str) -> new set from the values of the provided `collection`
+
+# 	set(collection: set | dict) -> new set from the keys of the given `collection`
+
+# 	set(game_enum) -> new set from the values of an in-game enum `game_enum`
+
+# 	takes `1 + len(collection)` where `collection` is one of the above if an input is given.
+# 	takes `1` tick to execute if no input is given.
+
+# 	Consider using `SetTFWR` to help with type hints involving sets.
+# 	"""
+# 	def __init__(self: Self, input: Iterable[K] | None = None, /) -> None: ...
+# 	def __iter__(self: Self, /) -> Iterator[K]: ...
+# 	def __next__(self: Self, /) -> K: ...
+# 	def __contains__(self, compare_object: K, /) -> _bool: ...
+# 	def add(self: Self, object: K, /) -> None:
+# 		"""
+# 		Add the `object` to a `given_set`.
+
+# 		takes `1` tick to execute.
+
+# 		example usage:
+
+# 		```
+# 		my_set = {1, 2, 3}
+# 		my_set.add(4)
+# 		print(my_set)
+# 		```
+
+# 		Output:
+
+# 		```
+# 		{1,2,3,4}
+# 		```
+# 		"""
+# 		...
+# 	def len(self: Self, /) -> _int:
+# 		"""
+# 		Returns the number of items in the set.
+
+# 		returns the length of the set.
+
+# 		takes `1` tick to execute.
+
+# 		example usage:
+
+# 		```
+# 		my_set = {1, 2, 3}
+# 		length = my_set.len()
+# 		print(length)
+# 		```
+
+# 		Output:
+
+# 		```
+# 		3
+# 		```
+# 		"""
+# 		...
+# 	def remove(self: Self, object: K, /) -> None:
+# 		"""
+# 		Remove the `object` from the set.
+
+# 		takes `1` tick to execute.
+
+# 		example usage:
+
+# 		```
+# 		my_set = {1, 2, 3}
+# 		my_set.remove(2)
+# 		print(my_set)
+# 		```
+
+# 		Output:
+
+# 		```
+# 		{1,3}
+# 		```
+# 		"""
+# 		...
+# 	...
+
+# --------------------------------------------------
+# Uncomment this class if you want additional game-specific type hints and docstrings for `range_class` methods. Should use in conjunction with the `range` function.
+
+# Comment out the `range_class` builtins import above to prevent conflict errors.
+
+# type RangeTFWR = range_class | _range
+# """
+# This type is used to represent the custom range type that is specific to the game and the range type provided by Python's builtins module. You cannot assign a range literal to the custom range type, however.
+
+# The range function will return `range_class` and the builtin `range` is aliased as `range_class` above. So the function version will return whichever has been defined most recently.
+
+# When using the `range` custom type below you should type hint your variables using `RangeTFWR` as this will let you catch both this custom type and Python builtin type while also staying compatible with TFWR.
+
+# example:
+# ```
+# custom_range: RangeTFWR = range(10)
+
+# from builtins import range
+# python_range: RangeTFWR = range(10)
+# ```
+# Makes this possible:
+# ```
+# custom_range = python_range
+# ```
+# """
+# class range_class():
+# 	"""
+# 	A range of values produced by the `range` function. See the `range` function for further details on ranges. This custom class is not assignable to `builtins.range` from Python standard library.
+
+# 	Consider using `RangeTFWR` to help with type hints involving ranges.
+# 	"""
+# 	def __iter__(self: Self, /) -> Iterator[_int]: ...
+# 	def __next__(self: Self, /) -> _int: ...
+# 	def __getitem__(self: Self, index: _float, /) -> _int: ...
+# 	def __le__(self: Self, compare: range_class | list[_int] | _list[_int] | tuple[_int], /) -> _bool:
+# 		"""
+# 		Ranges can only be compared to a `range`, `list`, or `tuple`. Elements of lists and tuples should all be `int` and have the same starting, ending, and step size.
+# 		"""
+# 		...
+# 	def __lt__(self: Self, compare: range_class | list[_int] | _list[_int] | tuple[_int], /) -> _bool:
+# 		"""
+# 		Ranges can only be compared to a `range`, `list`, or `tuple`. Elements of lists and tuples should all be `int` and have the same starting, ending, and step size.
+# 		"""
+# 		...
+# 	def __ge__(self: Self, compare: range_class | list[_int] | _list[_int] | tuple[_int], /) -> _bool:
+# 		"""
+# 		Ranges can only be compared to a `range`, `list`, or `tuple`. Elements of lists and tuples should all be `int` and have the same starting, ending, and step size.
+# 		"""
+# 		...
+# 	def __gt__(self: Self, compare: range_class | list[_int] | _list[_int] | tuple[_int], /) -> _bool:
+# 		"""
+# 		Ranges can only be compared to a `range`, `list`, or `tuple`. Elements of lists and tuples should all be `int` and have the same starting, ending, and step size.
+# 		"""
+# 		...
+# 	def __contains__(self, compare_value: _int, /) -> _bool: ...
+# 	def len(self: Self, /) -> _int:
+# 		"""
+# 		Returns the number of items in the range
+
+# 		returns the length of the range
+
+# 		takes `1` tick to execute.
+
+# 		example usage:
+
+# 		```
+# 		my_range = range(10)
+# 		length = my_range.len()
+# 		print(length)
+# 		```
+
+# 		Output:
+
+# 		```
+# 		10
+# 		```
+# 		"""
+# 		...
+# 	...
+
+# -------------------------------------------------------------------------------
+@overload
+def range(stop: _float, /) -> range_class:  # type: ignore
+	"""
+	Returns a sequence of numbers from `0` (inclusive) to `stop` (exclusive).
+
+	returns a range object.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	for i in range(5):
+	    print(i)
+	```
+
+	Output:
+
+	```
+	0
+	1
+	2
+	3
+	4
+	```
+
+	Note: if you wish to type hint a `range` variable use the alias `range_class` instead
+	"""
+	...
+
+@overload
+def range(start: _float, stop: _float, /) -> range_class:  # type: ignore
+	"""
+	Returns a sequence of numbers from `start` (inclusive) to `stop` (exclusive).
+
+	returns a range object.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	for i in range(2, 5):
+	    print(i)
+	```
+
+	Output:
+
+	```
+	2
+	3
+	4
+	```
+
+	Note: if you wish to type hint a `range` variable use the alias `range_class` instead
+	"""
+	...
+
+@overload
+def range(start: _float, stop: _float, step: _float, /) -> range_class:  # type: ignore
+	"""
+	Returns a sequence of numbers from `start` (inclusive) to `stop` (exclusive) every `step` interval.
+
+	returns a range object.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	for i in range(2, 5, 2):
+	    print(i)
+	```
+
+	Output:
+
+	```
+	2
+	4
+	```
+
+	Note: if you wish to type hint a `range` variable use the alias `range_class` instead
+	"""
+	...
+
+# --------------------------------------------------
+"""
+The following definitions are functions that mirror the methods that `lists`, `sets`, and `dicts` have. These definitions can be used as both a method and a function in TFWR.
+
+example usage (method):
+
+```
+list_numbers = [1, 2, 3]
+last_number = list_numbers.pop()
+print(last_number)
+```
+
+example usage (function):
+
+```
+list_numbers = [1, 2, 3]
+last_number = pop(list_numbers)
+print(last_number)
+```
+"""
+
+# --------------------------------------------------
+def add[K: Hashable](given_set: set[K] | _set[K], object: K, /) -> None:
+	"""
+	Add the `object` to a `given_set`.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	my_set = {1, 2, 3}
+	my_set.add(4)
+	print(my_set)
+	```
+
+	Output:
+
+	```
+	{1,2,3,4}
+	```
+	"""
+	...
+
+# --------------------------------------------------
+def append[V: Any](given_list: list[V] | _list[V], object: V, /) -> None:
+	"""
+	Add `object` to the end of a list provided as `given_list`.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	my_list = [1, 2, 3]
+	my_list.append(4)
+	print(my_list)
+	```
+
+	Output:
+
+	```
+	[1,2,3,4]
+	```
+	"""
+	...
+
+# --------------------------------------------------
+def insert[V: Any](given_list: list[V] | _list[V], index: _float, object: V, /) -> None:
+	"""
+	Add a `object` to the specified `index` to a list provided as `given_list`.
+
+	takes `1 + len(list) - index` ticks to execute
+
+	example usage:
+
+	```
+	my_list = [1, 2, 3]
+	my_list.insert(1, 4)
+	print(my_list)
+	```
+
+	Output:
+
+	```
+	[1,4,2,3]
+	```
+	"""
+	...
+
+# --------------------------------------------------
+def len[K: Hashable, V: Any](object : string | dict[K, V] | _dict[K, V] | list[V] | _list[V] | set[K] | _set[K] | tuple[V] | range_class, /) -> _int:
+	"""
+	Returns the number of items in the dict, list, set or str provided as `collection`.
+
+	returns the length of the dict, list, set or str.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	my_list = [1, 2, 3]
+	length = len(my_list)
+	print(length)
+	```
+
+	Output:
+
+	```
+	3
+	```
+	"""
+	...
+
+# --------------------------------------------------
+@overload
+def pop[K: Hashable, V: Any](collection: dict[K, V] | _dict[K, V], key: K, /) -> V: # type: ignore
+	"""
+	Remove the key-value pair corresponding to the `key` in the dict
+
+	returns the value of the removed key-value pair
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	my_dict = {"One": 1, "Two": 2, "Three": 3}
+	print("Old Value:", my_dict.pop("One"))
+	print("Current Dict:", my_dict)
+	```
+
+	Output:
+
+	```
+	Old Value: 1
+	Current Dict: {"Two":2,"Three":3}
+	```
+	"""
+	...
+
+@overload
+def pop[V: Any](collection: list[V] | _list[V], index: _float = -1, /) -> V:  # type: ignore
+	"""
+	Remove the element corresponding to the `index` in the list. If no index is specified removes the last element in the list.
+
+	returns the value of the removed element
+
+	takes `len(list) - index` ticks to execute if an `index` is provided
+	takes `1` tick to execute if no `index` is provided
+
+	example usage:
+
+	```
+	my_list = [1, 2, 3]
+	print("Old Value:", my_list.pop(1))
+	print("Current List:", my_list)
+	```
+
+	Output:
+
+	```
+	Old Value: 2
+	Current List: [1,3]
+	```
+	"""
+	...
+
+# --------------------------------------------------
+def remove[K: Hashable, V: Any](collection: list[V] | _list[V] | set[K] | _set[K], object: V, /) -> None:
+	"""
+	Remove the element corresponding to the `object` in a list or set provided as `collection`.
+
+	takes `num_comparison + num_shifts` ticks to execute if a list is provided.
+	takes `1` tick to execute if a set is provided.
+
+	example usage:
+
+	```
+	my_set = {1, 2, 3}
+	my_set.remove(2)
+	print(my_set)
+	```
+
+	Output:
+
+	```
+	{1,3}
+	```
+	"""
+	...
+
+# --------------------------------------------------
+def str(object: Any, /) -> string:
+	"""
+	Converts an object to its string representation.
+
+	returns the string representation of the object.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	string = str(1000)
+	print(string)
+	```
+
+	Output:
+
+	```
+	"1000"
+	```
+
+	Note: if you wish to type hint a `str` variable use the alias `string` instead
+	"""
+	...
+
+
+
+
+# -------------------------------------------------------------------------------
+# In-Game Enums
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
+class Direction:
+    """
+    A direction, e.g. North.
+    """
+    ...
+
+
+# --------------------------------------------------
+North = Direction()
+"""
+The direction north, i.e. up.
+"""
+
+East = Direction()
+"""
+The direction east, i.e. right.
+"""
+
+South = Direction()
+"""
+The direction south, i.e. down.
+"""
+
+West = Direction()
+"""
+The direction west, i.e. left.
+"""
+
+
+# -------------------------------------------------------------------------------
+class Entity:
+	"""
+	A member of the Entities class
+	"""
+	...
+
+
+# --------------------------------------------------
+class Entities(_Enum):
+	Apple: Entity
+	"""
+	Dinosaurs love them apparently.
+	"""
+
+	Bamboo: Entity
+	"""
+	Bamboo can grow quite tall, but flowers at one specific height. Harvesting it
+	at that height gives the largest yield.
+	"""
+
+	Bush: Entity
+	"""
+	A small bush that drops `Items.Wood`.
+
+	Average seconds to grow: 4
+	Grows on: grassland or soil
+	"""
+
+	Cactus: Entity
+	"""
+	Cacti come in 10 different sizes (0-9). When harvested, adjacent cacti that are in sorted order will also be harvested recursively.
+	You receive cactus equal to the number of harvested cacti squared.
+
+	Average seconds to grow: 1
+	Grows on: soil
+	"""
+
+	Carrot: Entity
+	"""
+	Carrots!
+
+	Average seconds to grow: 6
+	Grows on: soil
+	"""
+
+	Dead_Pumpkin: Entity
+	"""
+	One in five pumpkins dies when it grows up, leaving behind a dead pumpkin. Dead pumpkins are useless and disappear when something new is planted.
+	`can_harvest()` always returns `False` on dead pumpkins.
+	"""
+
+	Dinosaur: Entity
+	"""
+	A piece of the tail of the dinosaur hat. When wearing the dinosaur hat, the tail is dragged behind the drone filling previously moved tiles.
+
+	Average seconds to grow: 0.2
+	Grows on: grassland or soil
+	"""
+
+	Dynamite: Entity
+	"""
+	Explodes when dug into. Planting and harvesting it always costs or yields one
+	`Items.Dynamite`.
+	"""
+
+	Grass: Entity
+	"""
+	Grows automatically on grassland. Harvest it to obtain `Items.Hay`.
+
+	Average seconds to grow: 0.5
+	Grows on: grassland or soil
+	"""
+
+	Hedge: Entity
+	"""
+	Part of the maze.
+	"""
+
+	Pumpkin: Entity
+	"""
+	Pumpkins grow together when they are next to other fully grown pumpkins. About 1 in 5 pumpkins dies when it grows up.
+	When you harvest a pumpkin you get `Items.Pumpkin` equal to the number of pumpkins in the mega pumpkin cubed.
+
+	Average seconds to grow: 2
+	Grows on: soil
+	"""
+
+	Rice: Entity
+	"""
+	Rice can be planted on clay found underground.
+	"""
+
+	Sunflower: Entity
+	"""
+	Sunflowers collect the power from the sun. Harvesting them will give you `Items.Power`.
+	If you harvest a sunflower with the maximum number of petals (and there are at least 10 sunflowers) you get 5x bonus power.
+
+	Average seconds to grow: 5
+	Grows on: soil
+	"""
+
+	Treasure: Entity
+	"""
+	A treasure that contains gold equal to the side length of the maze in which it is hidden. It can be harvested like a plant.
+	"""
+
+	Tree: Entity
+	"""
+	Trees drop more wood than bushes. They take longer to grow if other trees grow next to them.
+
+	Average seconds to grow: 7
+	Grows on: grassland or soil
+	"""
+
+	Underground_Treasure: Entity
+	"""
+	The treasure found at the end of a treasure-map path.
+	"""
+
+
+# -------------------------------------------------------------------------------
+class Ground:
+	"""
+	A member of the Grounds class
+	"""
+	...
+
+
+# --------------------------------------------------
+class Grounds(_Enum):
+	Basalt: Ground
+	"""
+	Soft rock formed by cooling lava. Something might have been preserved below.
+	"""
+
+	Bedrock: Ground
+	"""
+	Indestructible ground.
+	"""
+
+	Blue_Block: Ground
+	"""
+	A blue block that can be placed manually.
+	"""
+
+	Clay: Ground
+	"""
+	Fertile ground for rice. Mature rice turns the clay below it back into dirt.
+	"""
+
+	Coal: Ground
+	"""
+	A block rich in sedimentary coal.
+	"""
+
+	Dirt: Ground
+	"""
+	Ordinary dirt that can be dug and placed.
+	"""
+
+	Dry_Rice_Terrace: Ground
+	"""
+	A dry rice terrace.
+	"""
+
+	Dynamite: Ground
+	"""
+	Can drop dynamite on the block below when dug. The dropped dynamite can be
+	harvested or dug into to make it explode.
+	"""
+
+	Grassland: Ground
+	"""
+	The default ground. Grass will automatically grow on it.
+	"""
+
+	Green_Block: Ground
+	"""
+	A green block that can be placed manually.
+	"""
+
+	Iron: Ground
+	"""
+	A block containing raw magnetite.
+	"""
+
+	Limestone: Ground
+	"""
+	Whitish limestone that forms the foundation of ancient pyramids.
+	"""
+
+	Loam: Ground
+	"""
+	Rich loam. Sunflowers and carrots planted here give double yield.
+	"""
+
+	Mushroom: Ground
+	"""
+	Underground mushrooms. Use `measure()` to determine the mushroom type.
+	"""
+
+	Perlite: Ground
+	"""
+	Dirt with high perlite content. Bushes, cacti, bamboo, and trees planted here
+	give double yield.
+	"""
+
+	Petrified_Pumpkin: Ground
+	"""
+	A petrified pumpkin. Still good to eat.
+	"""
+
+	Quartz: Ground
+	"""
+	A block encasing crystalline quartz.
+	"""
+
+	Red_Block: Ground
+	"""
+	A red block that can be placed manually.
+	"""
+
+	Rice_Terrace: Ground
+	"""
+	A flooded rice terrace.
+	"""
+
+	Rock: Ground
+	"""
+	A hard rock that can be dug and placed.
+	"""
+
+	Sand: Ground
+	"""
+	A sand block from an ancient pyramid.
+	"""
+
+	Soil: Ground
+	"""
+	Calling `till()` turns the ground into this. Calling `till()` again changes it back to grassland.
+	"""
+
+	Soot: Ground
+	"""
+	Calling `measure()` on this ground counts the live dynamite in the stratum
+	above. Dynamite that falls onto soot explodes immediately.
+	"""
+
+	Treasure_Goal: Ground
+	"""
+	The goal at the end of a treasure-map path.
+	"""
+
+	Treasure_Map: Ground
+	"""
+	A treasure map hidden underground.
+	"""
+
+	Treasure_Path: Ground
+	"""
+	A block on the path from a treasure map to its goal.
+	"""
+
+
+# -------------------------------------------------------------------------------
+class Hat:
+	"""
+	A member of the Hats class
+	"""
+	...
+
+
+# --------------------------------------------------
+class Hats(_Enum):
+	Brown_Hat: Hat
+	"""
+	A brown hat.
+	"""
+
+	Cactus_Hat: Hat
+	"""
+	A hat shaped like a cactus.
+	"""
+
+	Carrot_Hat: Hat
+	"""
+	A hat shaped like a carrot.
+	"""
+
+	Dinosaur_Hat: Hat
+	"""
+	Equip it to start the dinosaur game.
+	"""
+
+	Dynamite_Hat: Hat
+	"""
+	The chief blaster's hat. Every dig explodes and costs one dynamite. Only one
+	drone can be the chief blaster at a time.
+	"""
+
+	Gold_Hat: Hat
+	"""
+	A golden hat.
+	"""
+
+	Gold_Trophy_Hat: Hat
+	"""
+	A golden trophy hat.
+	"""
+
+	Golden_Cactus_Hat: Hat
+	"""
+	A golden hat shaped like a cactus.
+	"""
+
+	Golden_Carrot_Hat: Hat
+	"""
+	A golden hat shaped like a carrot.
+	"""
+
+	Golden_Gold_Hat: Hat
+	"""
+	A golden version of the gold hat.
+	"""
+
+	Golden_Pumpkin_Hat: Hat
+	"""
+	A golden hat shaped like a pumpkin.
+	"""
+
+	Golden_Sunflower_Hat: Hat
+	"""
+	A golden hat shaped like a sunflower.
+	"""
+
+	Golden_Tree_Hat: Hat
+	"""
+	A golden hat shaped like a tree.
+	"""
+
+	Gray_Hat: Hat
+	"""
+	A gray hat.
+	"""
+
+	Green_Hat: Hat
+	"""
+	A green hat.
+	"""
+
+	Mining_Hat: Hat
+	"""
+	A mining hat for a drone equipped with a drill.
+	"""
+
+	Pumpkin_Hat: Hat
+	"""
+	A hat shaped like a pumpkin.
+	"""
+
+	Purple_Hat: Hat
+	"""
+	A purple hat.
+	"""
+
+	Silver_Trophy_Hat: Hat
+	"""
+	A silver trophy hat.
+	"""
+
+	Straw_Hat: Hat
+	"""
+	The default hat.
+	"""
+
+	Sunflower_Hat: Hat
+	"""
+	A hat shaped like a sunflower.
+	"""
+
+	The_Farmers_Remains: Hat
+	"""
+	Unlocks the special hat 'The Farmers Remains'.
+	"""
+
+	Top_Hat: Hat
+	"""
+	Unlocks the fancy Top Hat.
+	"""
+
+	Traffic_Cone: Hat
+	"""
+	A traffic cone hat.
+	"""
+
+	Traffic_Cone_Stack: Hat
+	"""
+	A stack of traffic cones as a hat.
+	"""
+
+	Tree_Hat: Hat
+	"""
+	A hat shaped like a tree.
+	"""
+
+	Wizard_Hat: Hat
+	"""
+	A magical wizard hat.
+	"""
+
+	Wood_Trophy_Hat: Hat
+	"""
+	A wooden trophy hat.
+	"""
+
+
+# -------------------------------------------------------------------------------
+class Item:
+    """
+    A member of the Items Class
+    """
+    ...
+
+
+# --------------------------------------------------
+class Items(_Enum):
+    Bamboo: Item
+    """
+    Obtained by harvesting bamboo.
+    """
+
+    Block: Item
+    """
+    Obtained by digging. One block is consumed by a successful `place()` call.
+    """
+
+    Bone: Item
+    """
+    The bones of an ancient creature.
+    """
+
+    Cactus: Item
+    """
+    Obtained by harvesting sorted cacti.
+    """
+
+    Carrot: Item
+    """
+    Obtained by harvesting carrots.
+    """
+
+    Coal: Item
+    """
+    Obtained by digging up underground coal deposits. `prospect_iron()` consumes
+    one coal.
+    """
+
+    Dynamite: Item
+    """
+    Obtained from dynamite ground. Use it with `use_item(Items.Dynamite)`.
+    """
+
+    Fertilizer: Item
+    """
+    Call `use_item(Items.Fertilizer)` to instantly remove 2s from the plants remaining grow time.
+    """
+
+    Gold: Item
+    """
+    Found in treasure chests in mazes.
+    """
+
+    Hay: Item
+    """
+    Obtained by cutting grass.
+    """
+
+    Iron: Item
+    """
+    Obtained by digging up iron underground. `prospect_quartz()` consumes one
+    iron.
+    """
+
+    Mushroom: Item
+    """
+    Obtained by stacking matching mushroom ground blocks.
+    """
+
+    Piggy: Item
+    """
+    This item has been removed from the game but remains as a nostalgia trophy.
+    """
+
+    Power: Item
+    """
+    Obtained by harvesting sunflowers. The drone automatically uses this to move twice as fast.
+    """
+
+    Pumpkin: Item
+    """
+    Obtained by harvesting pumpkins.
+    """
+
+    Quartz: Item
+    """
+    Obtained by digging up quartz veins.
+    """
+
+    Rice: Item
+    """
+    Obtained by harvesting rice.
+    """
+
+    Water: Item
+    """
+    Used to water the ground by calling `use_item(Items.Water)`.
+    """
+
+    Weird_Substance: Item
+    """
+    Call `use_item(Items.Weird_Substance)` on a bush to grow a maze, or on other plants to toggle their infection status.
+    """
+
+    Wood: Item
+    """
+    Obtained from bushes and trees.
+    """
+
+
+# -------------------------------------------------------------------------------
+class Leaderboard:
+	"""
+	A member of the Leaderboards class
+	"""
+	...
+
+
+# --------------------------------------------------
+class Leaderboards(_Enum):
+	Cactus: Leaderboard
+	"""
+	Farm 33_554_432 cacti with multiple drones.
+	"""
+
+	Cactus_Single: Leaderboard
+	"""
+	Farm 131_072_cacti with a single drone on an 8x8 farm.
+	"""
+
+	Carrots: Leaderboard
+	"""
+	Farm 2_000_000_000 carrots with multiple drones.
+	"""
+
+	Carrots_Single: Leaderboard
+	"""
+	Farm 100_000_000 carrots with a single drone on an 8x8 farm.
+	"""
+
+	Dinosaur: Leaderboard
+	"""
+	Farm 33_488_928 bones with multiple drones.
+	"""
+
+	Fastest_Reset: Leaderboard
+	"""
+	The most prestigious category. Completely automate the game from a single farm plot to unlocking the leaderboards again.
+	"""
+
+	Hay: Leaderboard
+	"""
+	Farm 2_000_000_000 hay with multiple drones.
+	"""
+
+	Hay_Single: Leaderboard
+	"""
+	Farm 100_000_000 hay with a single drone on an 8x8 farm.
+	"""
+
+	Maze: Leaderboard
+	"""
+	Farm 9_863_168_gold with multiple drones.
+	"""
+
+	Maze_Single: Leaderboard
+	"""
+	Farm 616_448 gold with a single drone on an 8x8 farm.
+	"""
+
+	Pumpkins: Leaderboard
+	"""
+	Farm 200_000_000 pumpkins with multiple drones.
+	"""
+
+	Pumpkins_Single: Leaderboard
+	"""
+	Farm 10_000_000 pumpkins with a single drone on an 8x8 farm.
+	"""
+
+	Sunflowers: Leaderboard
+	"""
+	Farm 100_000 power with multiple drones.
+	"""
+
+	Sunflowers_Single: Leaderboard
+	"""
+	Farm 10_000 power with a single drone on an 8x8 farm.
+	"""
+
+	Wood: Leaderboard
+	"""
+	Farm 10_000_000_000 wood with multiple drones.
+	"""
+
+	Wood_Single: Leaderboard
+	"""
+	Farm 500_000_000 wood with a single drone on an 8x8 farm.
+	"""
+
+
+# -------------------------------------------------------------------------------
+class Unlock:
+	"""
+	A member of the Unlocks class
+	"""
+	...
+
+
+# --------------------------------------------------
+class Unlocks(_Enum):
+	Auto_Unlock: Unlock
+	"""
+	Automatically unlock things.
+	"""
+
+	Bamboo: Unlock
+	"""
+	Plant bamboo and watch it grow.
+	"""
+
+	Cactus: Unlock
+	"""
+	Unlock: Cactus!
+	Upgrade: Increases the yield and cost of cactus.
+	"""
+
+	Carrots: Unlock
+	"""
+	Unlock: Till the soil and plant carrots.
+	Upgrade: Increases the yield and cost of carrots.
+	"""
+
+	Coal: Unlock
+	"""
+	Coal deposits spawn underground.
+	"""
+
+	Costs: Unlock
+	"""
+	Allows access to the cost of things.
+	"""
+
+	Debug: Unlock
+	"""
+	Tools to help with debugging programs.
+	"""
+
+	Debug_2: Unlock
+	"""
+	Functions to temporarily slow down the execution and make the grid smaller.
+	"""
+
+	Debug_Place: Unlock
+	"""
+	Place colorful blocks.
+	"""
+
+	Dictionaries: Unlock
+	"""
+	Get access to dictionaries and sets.
+	"""
+
+	Dinosaurs: Unlock
+	"""
+	Unlock: Majestic ancient creatures.
+	Upgrade: Increases the yield and cost of dinosaurs.
+	"""
+
+	Dynamite: Unlock
+	"""
+	Find and use dynamite to blow things up.
+	"""
+
+	Expand: Unlock
+	"""
+	Unlock: Expands the farm land and unlocks movement.
+	Upgrade: Expands the farm. This also clears the farm.
+	"""
+
+	Fertilizer: Unlock
+	"""
+	Reduces the remaining growing time of the plant under the drone by 2 seconds.
+	"""
+
+	Functions: Unlock
+	"""
+	Define your own functions.
+	"""
+
+	Grass: Unlock
+	"""
+	Increases the yield of grass.
+	"""
+
+	Hats: Unlock
+	"""
+	Unlocks new hat colors for your drone.
+	"""
+
+	Import: Unlock
+	"""
+	Import code from other files.
+	"""
+
+	Iron: Unlock
+	"""
+	Iron ore veins spawn underground.
+	"""
+
+	Jump: Unlock
+	"""
+	Allows the drone to jump downward to selected underground features.
+	"""
+
+	Leaderboard: Unlock
+	"""
+	Join the leaderboard for the fastest time in farming a specific crop or for the fastest reset of the farm.
+	"""
+
+	Lists: Unlock
+	"""
+	Use lists to store lots of values.
+	"""
+
+	Loops: Unlock
+	"""
+	Unlocks a simple while loop.
+	"""
+
+	Mazes: Unlock
+	"""
+	Unlock: A maze with a treasure in the middle.
+	Upgrade: Increases the gold in treasure chests.
+	"""
+
+	Megafarm: Unlock
+	"""
+	Unlocks multiple drones and drone management functions.
+	"""
+
+	Mining: Unlock
+	"""
+	Gives the drone a drill and a mining hat.
+	"""
+
+	Mushrooms: Unlock
+	"""
+	Find and harvest underground mushrooms by matching their type.
+	"""
+
+	Ore_Boost: Unlock
+	"""
+	Doubles coal yield and doubles the size of iron and quartz veins.
+	"""
+
+	Operators: Unlock
+	"""
+	Arithmetic, comparison and logic operators.
+	"""
+
+	Petrified_Pumpkins: Unlock
+	"""
+	Petrified pumpkins spawn underground.
+	"""
+
+	Plant: Unlock
+	"""
+	Unlocks planting.
+	"""
+
+	Polyculture: Unlock
+	"""
+	Use companion planting to increase the yield.
+	"""
+
+	Prospecting: Unlock
+	"""
+	Use coal to look for iron.
+	"""
+
+	Pumpkins: Unlock
+	"""
+	Unlock: Pumpkins!
+	Upgrade: Increases the yield and cost of pumpkins.
+	"""
+
+	Pyramid: Unlock
+	"""
+	Ancient sandstone structures spawn underground.
+	"""
+
+	Quartz: Unlock
+	"""
+	Quartz needles spawn underground.
+	"""
+
+	Rice: Unlock
+	"""
+	Unlocks rice that can be grown on underground clay.
+	"""
+
+	Senses: Unlock
+	"""
+	The drone can see what's under it and where it is.
+	"""
+
+	Simulation: Unlock
+	"""
+	Unlocks simulation functions for testing and optimization.
+	"""
+
+	Special_Soils: Unlock
+	"""
+	Discover loam and perlite layers that boost plant yield.
+	"""
+
+	Speed: Unlock
+	"""
+	Increases the speed of the drone.
+	"""
+
+	Sunflowers: Unlock
+	"""
+	Unlock: Sunflowers and Power.
+	Upgrade: Increases the power gained from sunflowers.
+	"""
+
+	The_Farmers_Remains: Unlock
+	"""
+	Unlocks the special hat 'The Farmers Remains'.
+	"""
+
+	Timing: Unlock
+	"""
+	Functions to help measure performance.
+	"""
+
+	Top_Hat: Unlock
+	"""
+	Unlocks the fancy Top Hat.
+	"""
+
+	Treasure_Map: Unlock
+	"""
+	Hunt for treasure hidden deep underground.
+	"""
+
+	Trees: Unlock
+	"""
+	Unlocks trees.
+	Upgrade: Increases the yield of bushes and trees.
+	"""
+
+	Underground_Senses: Unlock
+	"""
+	Adds sensors for interacting with underground blocks.
+	"""
+
+	Utilities: Unlock
+	"""
+	Unlocks the `min()`, `max()` and `abs()` functions.
+	"""
+
+	Variables: Unlock
+	"""
+	Assign values to variables.
+	"""
+
+	Watering: Unlock
+	"""
+	Water the plants to make them grow faster.
+	"""
+
+
+
+
+
+# -------------------------------------------------------------------------------
+# Crop Management
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
+def harvest() -> _bool:
+	"""
+	Harvests the entity under the drone.
+	If you harvest an entity that can't be harvested, it will be destroyed.
+
+	returns `True` if an entity was removed, `False` otherwise.
+
+	takes `200` ticks to execute if an entity was removed, `1` tick otherwise.
+
+	example usage:
+
+	```
+	harvest()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def can_harvest() -> _bool:
+	"""
+	Used to find out if plants are fully grown.
+
+	returns `True` if there is an entity under the drone that is ready to be harvested, `False` otherwise.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	if can_harvest():
+		harvest()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def plant(entity: Entity | Entities, /) -> _bool:
+	"""
+	Spends the cost of the specified `entity` and plants it under the drone.
+	It fails if you can't afford the plant, the ground type is wrong or there's already a plant there.
+
+	Notes:
+	- A maze will not expand across different z positions.
+	- Pumpkins will not merge across different z positions.
+
+	returns `True` if it succeeded, `False` otherwise.
+
+	takes `200` ticks to execute if it succeeded, `1` tick otherwise.
+
+	example usage:
+
+	```
+	plant(Entities.Bush)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def swap(direction: Direction, /) -> _bool:
+	"""
+	Swaps the entity under the drone with the entity next to the drone in the specified `direction`.
+	Entities cannot be swapped across the world border.
+
+	Notes:
+	- Only works with cacti.
+	- Also works if one (or both) of the entities are `None`.
+	- Entities will not swap across different z positions.
+
+	If `direction` is not `None` it checks the neighboring tile in the given direction instead.
+	A direction that points into the world border will evaluate the tile on the other side of the world.
+
+	Value of `direction`:
+	- `East ` = right
+	- `West ` = left
+	- `North` = up
+	- `South` = down
+
+	returns `True` if it succeeded, `False` otherwise.
+
+	takes `200` ticks to execute on success, `1` tick otherwise.
+
+	example usage:
+
+	```
+	swap(North)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def till() -> None:
+	"""
+	Tills the ground under the drone into soil. If it's already soil it will change the ground back to grassland.
+
+	returns `None`
+
+	takes `200` ticks to execute.
+
+	example usage:
+
+	```
+	till()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def use_item(item: Item | Items, n: _int = 1, /) -> _bool:
+	"""
+	Attempts to use the specified `item` `n` times. Can only be used with some items including `Items.Water`, `Items.Fertilizer`, `Items.Weird_Substance`, and `Items.Dynamite`.
+	When using `Items.Weird_Substance` the weirdness will not wrap across the border.
+
+	Notes:
+	- A maze will not expand across different z positions.
+
+	returns `True` if an item was used, `False` if the item can't be used or you don't have enough.
+
+	takes `200` ticks to execute if it succeeded, `1` tick otherwise.
+
+	example usage:
+
+	```
+	if use_item(Items.Fertilizer):
+		print("Fertilizer used successfully")
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def place(ground: Ground | Grounds, /) -> _bool:
+	"""
+	Places a block of the specified `ground` below the drone and consumes one
+	`Items.Block`. Only manually placeable blocks can be used.
+
+	returns `True` if the block was placed, `False` if it cannot be placed or no
+	block item is available.
+
+	takes `200` ticks to execute if it succeeded, `1` tick otherwise.
+
+	example usage:
+
+	```
+	place(Grounds.Rock)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def clear() -> None:
+	"""
+	Removes everything from the world, destroys all drones (`has_finished` will return `False`),
+	moves the drone back to position `(0,0)` and changes the hat back to the default.
+
+	Notes:
+	- Water levels will retain their previous water level before a call to `clear`.
+
+	returns `None`
+
+	takes `200` ticks to execute.
+
+	example usage:
+
+	```
+	clear()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def change_hat(hat: Hat | Hats, /) -> None:
+	"""
+	Changes the hat of the drone to the specified `hat`.
+
+	returns `None`
+
+	takes `200` ticks to execute.
+
+	example usage:
+
+	```
+	change_hat(Hats.Dinosaur_Hat)
+	```
+	"""
+	...
+
+
+
+
+# -------------------------------------------------------------------------------
+# Movement
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
+def move(direction: Direction, /) -> _bool:
+	"""
+	Moves the drone into the specified `direction` by one tile.
+	A `direction` can point into a world border. If the drone moves over the edge of the world
+	it wraps back to the other side of the world.
+
+	Note: If the drone is wearing `Hats.Dinosaur_Hat` it cannot move across the world border.
+	It will also not be able to move to a different z position.
+
+	Value of `direction`:
+	- `East ` = right
+	- `West ` = left
+	- `North` = up
+	- `South` = down
+
+	returns `True` if the drone has moved, `False` otherwise.
+
+	takes `200` ticks to execute if the drone has moved, `1` tick otherwise.
+
+	example usage:
+
+	```
+	move(North)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def can_move(direction: Direction, /) -> _bool:
+	"""
+	Checks if the drone can move in the specified `direction`.
+	A `direction` that points into the world border will evaluate the tile on the other side of the world.
+
+	Value of `direction`:
+	- `East ` = right
+	- `West ` = left
+	- `North` = up
+	- `South` = down
+
+	returns `True` if the drone can move, `False` otherwise.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	if can_move(North):
+	    move(North)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def get_pos_x() -> _int:
+	"""
+	Gets the current x position of the drone.
+	The x position starts at `0` in the `West` and increases in the `East` direction.
+
+	returns a number representing the current x position of the drone.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	x, y = get_pos_x(), get_pos_y()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def get_pos_y() -> _int:
+	"""
+	Gets the current y position of the drone.
+	The y position starts at `0` in the `South` and increases in the `North` direction.
+
+	Value of `direction`:
+	- `East ` = right
+	- `West ` = left
+	- `North` = up
+	- `South` = down
+
+	returns a number representing the current y position of the drone.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	x, y = get_pos_x(), get_pos_y()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def hover(height: _float, /) -> _bool:
+	"""
+	Changes the height the drone hovers above ground.
+
+	The default height is `1` and most drone actions will reset the hover height
+	back to the default.
+
+	returns `True` if it succeeded, `False` otherwise.
+
+	takes `200` ticks to execute if it succeeded, `1` tick otherwise.
+
+	example usage:
+
+	```
+	hover(5)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def get_hover() -> _int:
+	"""
+	Gets the current height the drone hovers above ground.
+
+	returns the current hover height as an integer.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	height = get_hover()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def get_pos_z(direction: Direction | None = None, /) -> _int:
+	"""
+	Gets the current z position of the drone, or the z position of the neighboring
+	tile in `direction`. The z position starts at `0` and decreases while digging
+	downward.
+
+	If `direction` is not `None` it checks the neighboring tile in the given direction instead.
+	A `direction` that points into the world border will evaluate the tile on the other side of the world.
+
+	Value of `direction`:
+	- `East ` = right
+	- `West ` = left
+	- `North` = up
+	- `South` = down
+
+	returns the z position as an integer.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	x, y, z = get_pos_x(), get_pos_y(), get_pos_z()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+type WorldSizes = Literal[
+	3, 4, 5, 6, 7, 8, 9, 10,
+	11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+	21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+	31, 32,
+]
+
+def get_world_size() -> WorldSizes:
+	"""
+	Get the current size of the world.
+
+	returns the side length of the grid in the north to south direction.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	for i in range(get_world_size()):
+	    move(North)
+	```
+	"""
+	...
+
+
+
+
+# -------------------------------------------------------------------------------
+# Senses
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
+def get_entity_type(direction: Direction | None = None, /) -> Entity:
+	"""
+	Find out what kind of entity is under the drone, or on the neighboring tile in
+	`direction`.
+
+	If `direction` is not `None` it checks the neighboring tile in the given direction instead.
+	A `direction` that points into the world border will evaluate the tile on the other side of the world.
+
+	Value of `direction`:
+	- `East ` = right
+	- `West ` = left
+	- `North` = up
+	- `South` = down
+
+	returns `None` if the checked tile is empty, otherwise returns the type of the entity on that tile.
+	Note: `None` is not type hinted to reduce complexity when using variables with functions that accept a `Entity`.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	if get_entity_type() == Entities.Grass:
+	    harvest()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def get_ground_type(direction: Direction | None = None, /) -> Ground:
+	"""
+	Find out what kind of ground is under the drone, or on the neighboring tile in
+	`direction`.
+
+	If `direction` is not `None` it checks the neighboring tile in the given direction instead.
+	A `direction` that points into the world border will evaluate the tile on the other side of the world.
+
+	Value of `direction`:
+	- `East ` = right
+	- `West ` = left
+	- `North` = up
+	- `South` = down
+
+	returns the type of the ground on the checked tile.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	if get_ground_type() != Grounds.Soil:
+	    till()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def get_water() -> _float:
+	"""
+	Get the current water level under the drone.
+
+	returns the water level under the drone as a number between `0` and `1`. The water
+	level will not be `0` or `1` due to how water decay functions.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	if get_water() < 0.5:
+	    use_item(Items.Water)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def num_items(item: Item | Items, /) -> _float:
+	"""
+	Find out how much of `item` you currently have.
+
+	Notes:
+	- When using water a tile cannot have a water level above `1`
+
+	returns the number of `item` currently in your inventory.
+	`Items.Power` may return a number as float
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	if num_items(Items.Fertilizer) > 0:
+	    use_item(Items.Fertilizer)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+type Companion = _tuple[Entity, _tuple[_int, _int]]
+"""
+Special type that helps with type hinting the return of the `get_companion` function.
+"""
+
+def get_companion() -> _tuple[Entity, _tuple[_int, _int]]:
+	"""
+	Get the companion preference of the plant under the drone. Companions can wrap across the world.
+
+	Crops that can have a companion include: `Entities.Grass`, `Entities.Bush`, `Entities.Tree`, and `Entities.Carrot`
+
+	returns a tuple of the form `(companion_type, (companion_x_position, companion_y_position))` or `None` if there is no companion.
+	Note: `None` is not type hinted to reduce complexity when using variables with functions that accept companion tuple.
+	Note: `None` is not type hinted to reduce complexity when using variables with functions that accept either of the other return types.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	companion = get_companion()
+	if companion != None:
+	    plant_type, (x, y) = companion
+	    print("Companion:", plant_type, "at", x, ",", y)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+type Measure = _int | _tuple[_int, _int] | string
+"""
+Special type that helps with type hinting the return of the `measure` function.
+"""
+
+def measure(direction: Direction | None = None, /) -> Measure:
+	"""
+	Measures certain entities and underground ground types. The result depends on
+	what is being measured.
+
+	If `direction` is not `None` it checks the neighboring tile in the given direction instead.
+	A `direction` that points into the world border will evaluate the tile on the other side of the world.
+
+	Value of `direction`:
+	- `East ` = right
+	- `West ` = left
+	- `North` = up
+	- `South` = down
+
+	Sunflower: returns the number of petals.
+	Maze: returns the position of the current treasure from anywhere in the maze.
+	Cactus: returns the size.
+	Dinosaur: returns the position of the next apple (must be used on current apple).
+	Bamboo: return the height of the flower.
+	Mushroom: returns the mushroom type as a number.
+	Basalt: returns the `(x, y)` position of the `Entities.Treasure_Map` below.
+	Treasure_Map: returns a string of `direction` or `dig` letters describing the path (`N` = `North, `E` = `East`, `S` = `South`, `W` = `West`, `D` = `dig()`).
+	Soot: returns the number of live `Grounds.Dynamite` blocks in the stratum above.
+	All other entities and ground types: returns `None`.
+	Note: `None` is not type hinted to reduce complexity when using variables with functions that accept either of the other return types.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	num_petals = measure()
+	treasure_pos_x, treasure_pos_y = measure()
+	cactus_size = measure()
+	next_apple_x, next_apple_y = measure()
+	bamboo_height = measure()
+	mushroom_type = measure()
+	treasure_map_pos_x, treasure_map_pos_y = measure() # On `Grounds.Basalt`
+	treasure_map_directions = measure() # On `Grounds.Treasure_Map`
+	dynamite_number = measure()
+	```
+	"""
+	...
+
+
+
+
+
+# -------------------------------------------------------------------------------
+# Mining
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
+def dig() -> _bool:
+	"""
+	Digs `1` block downward. Whether the block is destroyed depends on its hardness
+	and the drone's drill strength.
+
+	returns `True` if the block was destroyed, `False` otherwise.
+
+	takes `hardness / drill strength` seconds to dig a block. This time is
+	independent of execution speed and can be reduced by the explosive drill.
+
+	example usage:
+
+	```
+	dig()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def get_hardness(direction: Direction | None = None, /) -> _float:
+	"""
+	Gets the hardness of the block below the drone, or of the neighboring block
+	in `direction`. Harder blocks take longer to dig.
+
+	If `direction` is not `None` it checks the neighboring tile in the given direction instead.
+	A `direction` that points into the world border will evaluate the tile on the other side of the world.
+
+	Value of `direction`:
+	- `East ` = right
+	- `West ` = left
+	- `North` = up
+	- `South` = down
+
+	returns the block hardness, or `None` if the requested tile is outside the
+	world.
+	Note: `None` is not type hinted to reduce complexity when using variables with functions that accept a `float`.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	if get_hardness() < 5:
+	    dig()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def get_stability(direction: Direction | None = None, /) -> _float:
+	"""
+	Gets the stability of the block below the drone, or of the neighboring block
+	in `direction`. Stability controls how much height difference a block can
+	withstand before it caves in.
+
+	If `direction` is not `None` it checks the neighboring tile in the given direction instead.
+	A `direction` that points into the world border will evaluate the tile on the other side of the world.
+
+	Value of `direction`:
+	- `East ` = right
+	- `West ` = left
+	- `North` = up
+	- `South` = down
+
+	returns the block stability, or `None` if the requested block is outside the world.
+	Note: `None` is not type hinted to reduce complexity when using variables with functions that accept a `float`.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	if get_stability() > 3:
+	    dig()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def prospect_iron() -> Direction:
+	"""
+	Uses `1` `Items.Coal` to look for nearby iron.
+
+	returns the direction toward the nearest iron ore, or `None` if the drone is
+	already above it, no iron is in range, or there is not enough coal.
+	Note: `None` is not type hinted to reduce complexity when using variables with functions that accept a `Direction`.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	direction = prospect_iron()
+	if direction != None:
+	    move(direction)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def prospect_quartz() -> _float:
+	"""
+	Uses `1` `Items.Iron` to look for nearby quartz.
+
+	returns the Euclidean 3D distance to the nearest quartz block, or `None` if no
+	quartz is in range or there is not enough iron.
+	Note: `None` is not type hinted to reduce complexity when using variables with functions that accept a `float`.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	print(prospect_quartz())
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def push(direction: Direction, /) -> _bool:
+	"""
+	Pushes the mushroom block below the drone in `direction`. Blocks cannot be pushed upward.
+
+	If `direction` is not `None` it checks the neighboring tile in the given direction instead.
+	A `direction` that points into the world border will evaluate the tile on the other side of the world.
+
+	Value of `direction`:
+	- `East ` = right
+	- `West ` = left
+	- `North` = up
+	- `South` = down
+
+	returns `True` if the block was pushed, `False` otherwise.
+
+	takes `200` ticks to execute if the block was pushed, `1` tick otherwise.
+
+	example usage:
+
+	```
+	push(North)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def can_push(direction: Direction, /) -> _bool:
+	"""
+	Checks whether the block below the drone can be pushed in `direction` and
+	whether anything blocks it.
+
+	If `direction` is not `None` it checks the neighboring tile in the given direction instead.
+	A `direction` that points into the world border will evaluate the tile on the other side of the world.
+
+	Value of `direction`:
+	- `East ` = right
+	- `West ` = left
+	- `North` = up
+	- `South` = down
+
+	returns `True` if the block can be pushed, `False` otherwise.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	if can_push(North):
+	    push(North)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def jump(unlock: Unlock | Unlocks, /) -> None:
+	"""
+	Jumps to an underground feature associated with `unlock`.
+
+	You can only execute `jump` once per script.
+
+	returns `None`.
+
+	takes `200` ticks to execute.
+
+	example usage:
+
+	```
+	jump(Unlocks.Iron)
+	```
+	"""
+	...
+
+
+
+
+# -------------------------------------------------------------------------------
+# Megafarm
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
+class Drone[R: Any]:
+    """
+    A class representing a spawned drone given a task to execute.
+
+    `R` - the return type of the `task` you provide the drone when you use `spawn_drone`
+    """
+    ...
+
+# -------------------------------------------------------------------------------
+def spawn_drone[*P, R: Any](task: Callable[[*P], R], /, *args: *P) -> Drone[R]:
+	"""
+	Spawns a new drone in the same position as the drone that ran `spawn_drone(task, *args)`. The new drone then begins executing the provided `task` function. The rest of the arguments are copied and passed into the specified `task` function. After the drone is done, it will disappear automatically.
+
+	`*P` - list of parameters that your task can can take as arguments. Must match the type of arguments you give to `spawn_drone` with the parameter types you assign of the `task` that you provide.
+	`R` - the return type of your drone. Must must the return type of of the `task` you provide.
+
+	Passes the `*args` to the provided `task` when that drone runs.
+
+	returns a `Drone[R]` object for the new drone or `None` if all drones are already spawned.
+	Note: `None` is not type hinted to reduce complexity when using variables with functions that accept a `Drone`.
+
+	takes `200` ticks to execute if a drone was spawned, `1` otherwise.
+
+	example:
+
+	```
+	def harvest_column(row):
+		for _ in range(row):
+			move(East)
+
+		for _ in range(get_world_size()):
+			harvest()
+			move(North)
+
+	for row in range(1, get_world_size()):
+		spawn_drone(harvest_column, row)
+
+	harvest_column(0)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def wait_for[R: Any](drone: Drone[R], /) -> R:
+	"""
+	Waits until the given `drone` terminates.
+
+	returns the return value of the function that the `drone` was running.
+	`R` - the return type of your drone. Must must the return type of of the `task` you provided with `spawn_drone`.
+
+	takes `1 + remaining task ticks` remaining in the given drone's task function.
+	takes `1` tick to execute if the awaited `drone` is already done.
+
+	example:
+
+	```
+	def get_entity_type_in_direction(dir):
+		move(dir)
+		return get_entity_type()
+
+	def zero_arg_wrapper():
+		return get_entity_type_in_direction(North)
+	handle = spawn_drone(zero_arg_wrapper)
+	print(wait_for(handle))
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def has_finished[R: Any](drone: Drone[R], /) -> _bool:
+	"""
+	Checks if the given `drone` has finished.
+
+	`R` - the return type of your drone. Must must the return type of of the `task` you provided with `spawn_drone`.
+
+	returns `True` if the drone has finished, `False` otherwise.
+	Note: If a `drone` was destroyed because of a call to `clear` will also return `False`
+
+	takes `1` tick to execute.
+
+	example:
+
+	```
+	drone = spawn_drone(function)
+	while not has_finished(drone):
+		do_something_else()
+	result = wait_for(drone)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def max_drones() -> _int:
+	"""
+	Gets the maximum number of drones available to use.
+
+	returns the maximum number of drones that you can use.
+
+	takes `1` tick to execute.
+
+	example:
+
+	```
+	while num_drones() < max_drones():
+		spawn_drone("some_file_name")
+		move(East)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def num_drones() -> _int:
+	"""
+	Gets the current number of drones currently running a task.
+
+	returns the number of drones currently in use..
+
+	takes `1` tick to execute.
+
+	example:
+
+	```
+	while num_drones() < max_drones():
+		spawn_drone("some_file_name")
+		move(East)
+	```
+	"""
+	...
+
+
+
+
+# -------------------------------------------------------------------------------
+# Debug
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
+def get_time() -> _float:
+	"""
+	Get the current game time. Time is shared across all drones.
+
+	returns the time in seconds since the start of the game.
+
+	takes `0` tick to execute.
+
+	example usage:
+
+	```
+	start = get_time()
+	do_something()
+	time_passed = get_time() - start
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def get_tick_count() -> _int:
+	"""
+	Used to measure the number of ticks performed. Each drone has its own tick count.
+
+	returns the number of ticks performed since the start of execution.
+
+	takes `0` tick to execute.
+
+	example usage:
+
+	```
+	do_something()
+	print(get_tick_count())
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def set_execution_speed(speed: _float, /) -> None:
+	"""
+	Limits the speed at which the program is executed to better see what's happening.
+
+	- A `speed` of `1` is the speed the drone has without any speed upgrades.
+	- A `speed` of `10` makes the code execute `10` times faster and corresponds to the speed of the drone after `9` speed upgrades.
+	- A `speed` of `0.5` makes the code execute at half of the speed without speed upgrades. This can be useful to see what the code is doing.
+
+	If `speed` is faster than the execution can currently go it will just go at max speed.
+
+	If `speed` is `0` or negative, the speed is changed back to max speed.
+	The effect will also stop when the execution stops.
+
+	returns `None`
+
+	takes `200` ticks to execute.
+
+	example usage:
+
+	```
+	set_execution_speed(1)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def set_world_size(size: WorldSizes, /) -> None:
+	"""
+	Limits the size of the world to better see what's happening.
+	Also clears the world and resets the drone's position, but only if the size has actually changed.
+
+	- Sets the world to a `size` x `size` grid.
+	- The smallest `size` possible is `3` and maximum `size` is `32`
+	- A `size` smaller than `3` will change the grid back to its full size.
+	- The effect will also stop when the execution stops.
+
+	returns `None`
+
+	takes `200` ticks to execute.
+
+	example usage:
+
+	```
+	set_world_size(5)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+type _SimulateUnlocksPair = _tuple[Unlock, _int]
+
+type SimulateUnlocks = (
+	dict[Unlock, _int] | _dict[Unlock, _int] |					# (Unlock, int) pairings
+	list[_SimulateUnlocksPair] | _list[_SimulateUnlocksPair] |
+	_tuple[_SimulateUnlocksPair,...] |
+
+	_tuple[Unlock,...] |										# Sequence of unlocks
+	_list[Unlock] |
+
+	Unlocks														# All unlocks
+)
+"""
+A sequence containing the starting unlocks. These unlocks can be one of these:
+
+- `dict[Unlock, int]` - Example: `{Unlocks.Expand: 2, Unlocks.Cactus: 1}`
+
+- `tuple[tuple[Unlock, int],...]` - Example: `((Unlocks.Expand, 2), (Unlocks.Cactus, 1))`
+
+- `list[tuple[Unlock, int]]` - Example: `[(Unlocks.Expand, 2), (Unlocks.Cactus, 1)]`
+
+- `tuple[Unlock,...]` - Captures your current unlock level of specific unlocks from your main farm. Example: `(Unlocks.Expand, Unlocks.Cactus)`
+
+- `list[Unlock]` - Captures your current unlock level of specific unlocks from your main farm. Example: `[Unlocks.Expand, Unlocks.Cactus]`
+
+- `Unlocks` - Captures all of your current unlock levels from your main farm.
+"""
+
+type SimulateItems = dict[Item, _float] | _dict[Item, _float]
+"""
+Special type that helps with type hinting the `sim_items` parameter of the `simulate` function.
+"""
+
+type SimulateGlobals = dict[string, AnyTFWR] | _dict[string, AnyTFWR]
+"""
+Special type that helps with type hinting the `sim_globals` parameter of the `simulate` function.
+"""
+
+def simulate(
+		filename: string,
+		sim_unlocks: SimulateUnlocks,
+		sim_items: dict[Item, _float] | _dict[Item, _float],
+		sim_globals: dict[string, AnyTFWR] | _dict[string, AnyTFWR],
+		seed: _float, speedup: _float,
+		/
+	) -> _float:
+	"""
+	Starts a simulation for the leaderboard using the specified `file_name` as a starting point.
+
+	`sim_unlocks`: A sequence containing the starting unlocks. These unlocks can be one of these:
+
+	- `dict[Unlock, int]` - Example: `{Unlocks.Expand: 2, Unlocks.Cactus: 1}`
+
+	- `tuple[tuple[Unlock, int],...]` - Example: `((Unlocks.Expand, 2), (Unlocks.Cactus, 1))`
+
+	- `list[tuple[Unlock, int]]` - Example: `[(Unlocks.Expand, 2), (Unlocks.Cactus, 1)]`
+
+	- `tuple[Unlock,...]` - Captures your current unlock level of specific unlocks from your main farm. Example: `(Unlocks.Expand, Unlocks.Cactus)`
+
+	- `list[Unlock]` - Captures your current unlock level of specific unlocks from your main farm. Example: `[Unlocks.Expand, Unlocks.Cactus]`
+
+	- `Unlocks` - Captures all of your current unlock levels from your main farm.
+
+	`sim_items`: A dict mapping items to amounts. The simulation starts with these items.
+
+	`sim_globals`: A dict mapping variable names to values. The simulation starts with these variables in the global scope. Make sure any variables assigned in here are not assigned in the simulation code as that will override the vales from this dict.
+
+	`seed`: The random seed of the simulation. Must be a positive integer.
+
+	`speedup`: The starting speedup. The simulation may not reach the stated `speedup` value if it cannot properly speedup computation. Common causes for this include use of multiple drones or eating up too many ticks in a loop per iteration (for example a wait loop using pass).
+
+	returns the time it took to run the simulation.
+
+	takes `200` ticks to execute.
+
+	example usage:
+
+	```
+	filename = "f1"
+	sim_unlocks = Unlocks
+	sim_items = {Items.Carrot : 10000, Items.Hay : 50}
+	sim_globals = {"a" : 13}
+	seed = 0
+	speedup = 64
+	run_time = simulate(filename, sim_unlocks, sim_items, sim_globals, seed, speedup)
+	```
+	"""
+	...
+
+
+
+
+# -------------------------------------------------------------------------------
+# Auto Unlock
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
+type Cost = dict[Item, _int] | _dict[Item, _int]
+"""
+Special type that helps with type hinting the return of the `get_cost` function.
+"""
+
+def get_cost(thing: Entity | Entities | Unlock | Unlocks, level: _int = 0, /) -> dict[Item, _int] | _dict[Item, _int]:
+	"""
+	Gets the cost of a `thing`
+
+	If `thing` is an entity: get the cost of planting it.
+	If `thing` is an unlock: get the cost of unlocking it at the specified level.
+
+	- returns a dictionary with items as keys and numbers as values. Each item is mapped to how much of it is needed.
+	- returns `{}` (empty dict) for unlocks that are already unlocked (when no level specified).
+	- The optional `level` parameter specifies the upgrade level for unlocks.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	cost = get_cost(Unlocks.Carrots)
+	for item in cost:
+	    if num_items(item) < cost[item]:
+	        print('not enough items to unlock carrots')
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def unlock(unlock: Unlock | Unlocks, /) -> _bool:
+	"""
+	Has exactly the same effect as clicking the button corresponding to `unlock` in the research tree.
+
+	returns `True` if the unlock was successful, `False` otherwise.
+
+	takes `200` ticks to execute if it succeeded, `1` tick otherwise.
+
+	example usage:
+
+	```
+	unlock(Unlocks.Carrots)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def num_unlocked(thing: Enums, /) -> _int:
+	"""
+	Used to check if an unlock, entity, ground, item or hat is already unlocked.
+
+	returns `1` plus the number of times `thing` has been upgraded if `thing` is upgradable. Otherwise returns `1` if `thing` is unlocked, `0` otherwise.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	if num_unlocked(Unlocks.Carrots) > 0:
+	    plant(Entities.Carrot)
+	else:
+	    print("Carrots not unlocked yet")
+	```
+	"""
+	...
+
+
+
+
+# -------------------------------------------------------------------------------
+# Math
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
+def random() -> _float:
+	"""
+	Samples a random number between 0 (inclusive) and 1 (exclusive).
+
+	returns the random number.
+
+	takes `1` ticks to execute.
+
+	example usage:
+
+	```
+	def random_elem(list):
+	    index = random() * len(list) // 1
+	    return list[index]
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+@overload
+def min(sequence: range_class, /) -> _int: # type: ignore
+	"""
+	Gets the minimum of a sequence of elements. Elements can be `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`sequence`: Any `tuple`, `list`, `range`, `dict`, or `set`
+
+	`min(sequence)`: Returns the minimum of all values in a sequence.
+
+	returns the minimum from the arguments:
+	- If `tuple`, `list` or `range` is given will return minimum value
+	- If `dict` or `set` is given will return the minimum key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest_from_list = min([3, 6, 34, 16])
+	```
+	"""
+	...
+
+@overload
+def min(sequence: Iterable[_float], /) -> _float: # type: ignore
+	"""
+	Gets the minimum of a sequence of elements. Elements can be `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`sequence`: Any `tuple`, `list`, `range`, `dict`, or `set`
+
+	`min(sequence)`: Returns the minimum of all values in a sequence.
+
+	returns the minimum from the arguments:
+	- If `tuple`, `list` or `range` is given will return minimum value
+	- If `dict` or `set` is given will return the minimum key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest_from_list = min([3, 6, 34, 16])
+	```
+	"""
+	...
+
+@overload
+def min(sequence: Iterable[string], /) -> string: # type: ignore
+	"""
+	Gets the minimum of a sequence of elements. Elements can be `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`sequence`: Any `tuple`, `list`, `range`, `dict`, or `set`
+
+	`min(sequence)`: Returns the minimum of all values in a sequence.
+
+	returns the minimum from the arguments:
+	- If `tuple`, `list` or `range` is given will return minimum value
+	- If `dict` or `set` is given will return the minimum key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest_from_list = min([3, 6, 34, 16])
+	```
+	"""
+	...
+
+@overload
+def min(*args: range_class) -> range_class: # type: ignore
+	"""
+	Gets the minimum of several passed arguments. Can be used on `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`min(a,b,c)`: Returns the minimum of `a`, `b` and `c`.
+
+	returns the collection that has the minimum total:
+	- If `tuple`, `list` or `range` is given will return minimum argument based on value
+	- If `dict` or `set` is given will return the minimum argument based on key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest = min(1, 5, 3, 2)
+	```
+	"""
+	...
+
+@overload
+def min(*args: _float) -> _float: # type: ignore
+	"""
+	Gets the minimum of several passed arguments. Can be used on `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`min(a,b,c)`: Returns the minimum of `a`, `b` and `c`.
+
+	returns the collection that has the minimum total:
+	- If `tuple`, `list` or `range` is given will return minimum argument based on value
+	- If `dict` or `set` is given will return the minimum argument based on key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest = min(1, 5, 3, 2)
+	```
+	"""
+	...
+
+@overload
+def min(*args: Iterable[_float]) -> Iterable[_float]: # type: ignore
+	"""
+	Gets the minimum of several passed arguments. Can be used on `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`min(a,b,c)`: Returns the minimum of `a`, `b` and `c`.
+
+	returns the collection that has the minimum total:
+	- If `tuple`, `list` or `range` is given will return minimum argument based on value
+	- If `dict` or `set` is given will return the minimum argument based on key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest = min(1, 5, 3, 2)
+	```
+	"""
+	...
+
+@overload
+def min(*args: string) -> string: # type: ignore
+	"""
+	Gets the minimum of several passed arguments. Can be used on `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`min(a,b,c)`: Returns the minimum of `a`, `b` and `c`.
+
+	returns the collection that has the minimum total:
+	- If `tuple`, `list` or `range` is given will return minimum argument based on value
+	- If `dict` or `set` is given will return the minimum argument based on key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest = min(1, 5, 3, 2)
+	```
+	"""
+	...
+
+@overload
+def min(*args: Iterable[string]) -> Iterable[string]: # type: ignore
+	"""
+	Gets the minimum of several passed arguments. Can be used on `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`min(a,b,c)`: Returns the minimum of `a`, `b` and `c`.
+
+	returns the collection that has the minimum total:
+	- If `tuple`, `list` or `range` is given will return minimum argument based on value
+	- If `dict` or `set` is given will return the minimum argument based on key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest = min(1, 5, 3, 2)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+@overload
+def max(sequence: range_class, /) -> _int: # type: ignore
+	"""
+	Gets the maximum of a sequence of elements. Elements can be `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`sequence`: Any `tuple`, `list`, `range`, `dict`, or `set`
+
+	`max(sequence)`: Returns the maximum of all values in a sequence.
+
+	returns the maximum from the arguments:
+	- If `tuple`, `list` or `range` is given will return maximum value
+	- If `dict` or `set` is given will return the maximum key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest_from_list = max([3, 6, 34, 16])
+	```
+	"""
+	...
+
+@overload
+def max(sequence: Iterable[_float], /) -> _float: # type: ignore
+	"""
+	Gets the maximum of a sequence of elements. Elements can be `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`sequence`: Any `tuple`, `list`, `range`, `dict`, or `set`
+
+	`max(sequence)`: Returns the maximum of all values in a sequence.
+
+	returns the maximum from the arguments:
+	- If `tuple`, `list` or `range` is given will return maximum value
+	- If `dict` or `set` is given will return the maximum key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest_from_list = max([3, 6, 34, 16])
+	```
+	"""
+	...
+
+@overload
+def max(sequence: Iterable[string], /) -> string: # type: ignore
+	"""
+	Gets the maximum of a sequence of elements. Elements can be `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`sequence`: Any `tuple`, `list`, `range`, `dict`, or `set`
+
+	`max(sequence)`: Returns the maximum of all values in a sequence.
+
+	returns the maximum from the arguments:
+	- If `tuple`, `list` or `range` is given will return maximum value
+	- If `dict` or `set` is given will return the maximum key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest_from_list = max([3, 6, 34, 16])
+	```
+	"""
+	...
+
+@overload
+def max(*args: range_class) -> range_class: # type: ignore
+	"""
+	Gets the maximum of several passed arguments. Can be used on `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`max(a,b,c)`: Returns the maximum of `a`, `b` and `c`.
+
+	returns the collection that has the maximum total:
+	- If `tuple`, `list` or `range` is given will return maximum argument based on value
+	- If `dict` or `set` is given will return the maximum argument based on key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest = max(1, 5, 3, 2)
+	```
+	"""
+	...
+
+@overload
+def max(*args: _float) -> _float: # type: ignore
+	"""
+	Gets the maximum of several passed arguments. Can be used on `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`max(a,b,c)`: Returns the maximum of `a`, `b` and `c`.
+
+	returns the collection that has the maximum total:
+	- If `tuple`, `list` or `range` is given will return maximum argument based on value
+	- If `dict` or `set` is given will return the maximum argument based on key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest = max(1, 5, 3, 2)
+	```
+	"""
+	...
+
+@overload
+def max(*args: Iterable[_float]) -> Iterable[_float]: # type: ignore
+	"""
+	Gets the maximum of several passed arguments. Can be used on `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`max(a,b,c)`: Returns the maximum of `a`, `b` and `c`.
+
+	returns the collection that has the maximum total:
+	- If `tuple`, `list` or `range` is given will return maximum argument based on value
+	- If `dict` or `set` is given will return the maximum argument based on key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest = max(1, 5, 3, 2)
+	```
+	"""
+	...
+
+@overload
+def max(*args: string) -> string: # type: ignore
+	"""
+	Gets the maximum of several passed arguments. Can be used on `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`max(a,b,c)`: Returns the maximum of `a`, `b` and `c`.
+
+	returns the collection that has the maximum total:
+	- If `tuple`, `list` or `range` is given will return maximum argument based on value
+	- If `dict` or `set` is given will return the maximum argument based on key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest = max(1, 5, 3, 2)
+	```
+	"""
+	...
+
+@overload
+def max(*args: Iterable[string]) -> Iterable[string]: # type: ignore
+	"""
+	Gets the maximum of several passed arguments. Can be used on `float` or `str` unless a `range` is given then elements will be `int`.
+
+	`max(a,b,c)`: Returns the maximum of `a`, `b` and `c`.
+
+	returns the collection that has the maximum total:
+	- If `tuple`, `list` or `range` is given will return maximum argument based on value
+	- If `dict` or `set` is given will return the maximum argument based on key.
+
+	takes `num_comparison` ticks to execute.
+
+	example usage:
+
+	```
+	smallest = max(1, 5, 3, 2)
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def abs(x: _float, /) -> _float:
+	"""
+	Returns the absolute value of a number.
+
+	returns the absolute value of x.
+
+	takes `1` tick to execute.
+
+	example usage:
+
+	```
+	positive = abs(-5)
+	print(positive)
+	```
+
+	Output:
+
+	```
+	5
+	```
+	"""
+	...
+
+
+
+
+# -------------------------------------------------------------------------------
+# Utility
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
+def print(*something: Any) -> None:
+	"""
+	Prints `something` into the air above the drone using smoke. This action is not affected by speed upgrades.
+	Multiple values can be printed at once.
+
+	returns `None`
+
+	takes 1s to execute.
+
+	example usage:
+
+	```
+	print('ground:', get_ground_type())
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def quick_print(*something: Any) -> None:
+	"""
+	Prints a value just like `print()` but it doesn't stop to write it into the air so it can only be found on the output page.
+
+	returns `None`
+
+	takes `0` ticks to execute.
+
+	example usage:
+
+	```
+	quick_print('hi mom')
+	```
+	"""
+	...
+
+
+
+
+# -------------------------------------------------------------------------------
+# Miscellaneous
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
+def do_a_flip() -> None:
+	"""
+	Makes the drone do a flip! This action is not affected by speed upgrades.
+
+	returns `None`
+
+	takes 1s to execute.
+
+	example usage:
+
+	```
+	while True:
+		do_a_flip()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def pet_the_piggy() -> None:
+	"""
+	Pets the piggy! This action is not affected by speed upgrades.
+
+	returns `None`
+
+	takes 1s to execute.
+
+	example usage:
+
+	```
+	while True:
+		pet_the_piggy()
+	```
+	"""
+	...
+
+
+# --------------------------------------------------
+def leaderboard_run(leaderboard: Leaderboard, file_name: string, speedup: _float, /) -> None:
+	"""
+	Starts a timed run for the `leaderboard` using the specified `file_name` as a starting point.
+	`speedup` sets the starting speedup.
+
+	returns `None`
+
+	takes `200` ticks to execute.
+
+	example usage:
+
+	```
+	leaderboard_run(Leaderboards.Fastest_Reset, "full_run", 256)
+	```
+	"""
+	...

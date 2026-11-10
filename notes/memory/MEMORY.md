@@ -1,0 +1,10 @@
+- [Non toccare Saves](no-touch-saves.md) — mai scrivere/copiare file nella cartella Saves del gioco
+- [Hay leaderboard status](hay-leaderboard-status.md) — best 1:48.943 (#26) with lb_hay_micro.py; haysim is calibrated; corrected tick costs; dense layout lb_hay_dense.py, best 1:48.174 #12; clean #1 is 1:46.212; clean record 1:46.960
+- [Leaderboard overview](leaderboard-overview.md) — elenco delle 30 classifiche e stato di quelle non-hay; girasoli: sim tarato con crescita 7 s, bozza v7 2:42.9 in gioco, v9 scritta (sim 2:40), v8 peggiore
+- [TODO girasoli](sunflowers-todo.md) — direzioni fisse nella semina: -0,55 s simulati, v10 in gioco 2:37.964 (v9 ~2:38.1)
+- [Sunflowers Single](sunflowers-single.md) — 1 drone 8x8: v2 5:08-5:13 in gioco (v1 5:23.47; #1 reale 3:47.7, utente #5), v3 5:02.276 in gioco, v4 4:56, v5 4:46.553, v6 (codifica y*16+x) 4:39.7, v7 4:34.059, v8 utente 4:28.13, v9 (unione) 4:25.249, v10 (codice) 4:23.733, v11 (v10+ChatGPT) da provare, campo piu piccolo (set_world_size) peggiore, simulatore haysim/sunsingle.py
+- [Hay Single](hay-single.md) — 1 drone 8x8 1e8 fieno: v1 2:52.783 in gioco (#84; #1 2:45.2 sotto il limite dello schema), v2 in gioco PB 2:51.329 (#67), stima 2:52.1 confermata
+- [Rice leaderboard](rice-leaderboard.md) — PB 1:49.327 #1 con v19 (A1/A2 intrecciate nei primi 2 strati; ex #1 1:49.943); sim haysim/rice/v4.py; generatore gen_rice.py; Single lb_rice_single.py 2:26
+- [Bamboo leaderboard](bamboo-leaderboard.md) — single v2 3:17 in gioco (v1 3:24.2, sim tarato), schema a passate ha pavimento ~170 s: al #1 (2:33) serve un meccanismo non ancora trovato
+- [Treasure Map leaderboard](treasure-leaderboard.md) — regole, scorciatoia sul percorso (FindLastIndex), v4 25.0 s, v5 (cicli srotolati) da provare; #1 19.4 s
+- [Sunflowers multi v11](sunflowers-multi-v11.md) — v11 in gioco 2:28.5 (sim 2:29.2; v10 2:38.0); limite dello schema a fasi ~2:29, harness per eseguire gli script veri, schemi scartati

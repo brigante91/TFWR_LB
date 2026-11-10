@@ -1,0 +1,28 @@
+SESSIONE RECUPERATA (valida finché NON riavvii Steam)
+=====================================================
+Generatore di sessione G = 701650662   (DotNetRandom(701650662))
+Fingerprint osservate agli indici 2..14 -> tutte MATCH (validazione end-to-end OK)
+Posizione corrente del generatore: indice 14 consumato.
+
+Prossimi seed master delle run SEEDLESS (simulate(...,-1,...) o prima run di leaderboard_run),
+in ordine, a partire dalla prossima azione seedless:
+  indice 15 -> 746272860   (la PROSSIMA run seedless userà questo)
+  indice 16 -> 1515778053
+  indice 17 -> 563744439
+  indice 18 -> 383867903
+  indice 19 -> 821660393
+  indice 20 -> 1977241724
+  indice 21 -> 209774709
+
+NOTE OPERATIVE
+- Ogni azione seedless avanza l'indice di 1 (ogni fingerprint, ogni simulate(-1), ogni
+  prima-run di leaderboard_run). Conta le tue azioni per sapere a che indice sei.
+- Per COSTRUIRE/VALIDARE gli script usa seed ESPLICITI: simulate(code, Unlocks, {}, {}, 746272860, 1)
+  ricrea esattamente il mondo dell'indice 15 in modo ripetibile.
+- La predizione di sessione serve solo a sapere QUALE seed esplicito userà la submission vera.
+- Riavvio di Steam -> nuovo G (entropia OS) -> ri-raccogli fingerprint e rifai session.py.
+
+Come rigenerare questi numeri:
+  python3 -c "from tfwr_rng import DotNetRandom,SimulationRng;
+  g=DotNetRandom(701650662); s=[g.sample() for _ in range(30)];
+  print([s[i] for i in range(15,22)])"

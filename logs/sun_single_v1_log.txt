@@ -1,0 +1,100 @@
+# Log in gioco di lb_sunflowers_single_v1_log.py (7 nov 2026), solo i cicli 15-23 (l'utente ha incollato la coda)
+ciclo 15 inizio 214.75 power 6283.84
+  semina fine 219.86 durata 5.1 valori 7..15 17 8 4 7 4 2 7 10 5 acqua 32 serbatoio 5031 piantate 54
+  fase 15 fine 221.03 raccolti 5 mosse 13 attesa 0.54 power 6317.38
+  fase 14 fine 222.3 raccolti 10 mosse 26 attesa 0 power 6396.13
+  fase 13 fine 223.31 raccolti 7 mosse 22 attesa 0 power 6451.15
+  fase 12 fine 223.67 raccolti 2 mosse 8 attesa 0 power 6466.75
+  fase 11 fine 224.5 raccolti 4 mosse 20 attesa 0 power 6497.91
+  fase 10 fine 225.54 raccolti 7 mosse 23 attesa 0 power 6552.92
+  fase 9 fine 226.04 raccolti 4 mosse 10 attesa 0 power 6584.31
+  fase 8 fine 227.26 raccolti 8 mosse 27 attesa 0 power 6647.08
+  fase 7 fine 227.95 raccolti 7 mosse 12 attesa 0 power 6702.49
+ciclo 16 inizio 227.95 power 6702.49
+  semina fine 232.72 durata 4.77 valori 7..15 15 3 4 9 7 8 5 7 6 acqua 22 serbatoio 5338 piantate 54
+  fase 15 fine 234.84 raccolti 6 mosse 18 attesa 1.27 power 6743.41
+  fase 14 fine 235.96 raccolti 7 mosse 25 attesa 0 power 6798.37
+  fase 13 fine 236.69 raccolti 5 mosse 16 attesa 0 power 6837.56
+  fase 12 fine 237.72 raccolti 8 mosse 21 attesa 0 power 6900.56
+  fase 11 fine 238.67 raccolti 7 mosse 20 attesa 0 power 6955.53
+  fase 10 fine 239.86 raccolti 9 mosse 25 attesa 0 power 7026.32
+  fase 9 fine 240.4 raccolti 4 mosse 11 attesa 0 power 7057.92
+  fase 8 fine 240.89 raccolti 3 mosse 11 attesa 0 power 7081.31
+  fase 7 fine 241.33 raccolti 5 mosse 7 attesa 0 power 7120.91
+ciclo 17 inizio 241.33 power 7120.91
+  semina fine 246.37 durata 5.04 valori 7..15 19 1 7 9 6 6 4 3 9 acqua 30 serbatoio 5658 piantate 54
+  fase 15 fine 247.81 raccolti 9 mosse 26 attesa 0.22 power 7186.24
+  fase 14 fine 248.37 raccolti 3 mosse 13 attesa 0 power 7209.84
+  fase 13 fine 248.97 raccolti 4 mosse 13 attesa 0 power 7241.21
+  fase 12 fine 249.75 raccolti 6 mosse 16 attesa 0 power 7288.42
+  fase 11 fine 250.56 raccolti 6 mosse 17 attesa 0 power 7335.59
+  fase 10 fine 251.85 raccolti 9 mosse 28 attesa 0 power 7406.18
+  fase 9 fine 252.93 raccolti 7 mosse 24 attesa 0 power 7461.15
+  fase 8 fine 253.11 raccolti 1 mosse 4 attesa 0 power 7468.97
+  fase 7 fine 254.27 raccolti 9 mosse 24 attesa 0 power 7539.77
+ciclo 18 inizio 254.27 power 7539.77
+  semina fine 259.11 durata 4.84 valori 7..15 20 7 10 7 4 9 2 4 1 acqua 24 serbatoio 5960 piantate 54
+  fase 15 fine 260.16 raccolti 1 mosse 3 attesa 0.9 power 7541.89
+  fase 14 fine 260.92 raccolti 4 mosse 18 attesa 0 power 7573.06
+  fase 13 fine 261.14 raccolti 2 mosse 4 attesa 0 power 7588.88
+  fase 12 fine 262.44 raccolti 9 mosse 28 attesa 0 power 7659.46
+  fase 11 fine 262.9 raccolti 4 mosse 9 attesa 0 power 7691.03
+  fase 10 fine 263.69 raccolti 7 mosse 15 attesa 0 power 7746.23
+  fase 9 fine 265.16 raccolti 10 mosse 32 attesa 0 power 7824.81
+  fase 8 fine 266.14 raccolti 7 mosse 21 attesa 0 power 7879.82
+  fase 7 fine 267.05 raccolti 10 mosse 15 attesa 0 power 7958.8
+ciclo 19 inizio 267.05 power 7958.8
+  semina fine 272.22 durata 5.17 valori 7..15 15 4 6 6 7 8 9 7 2 acqua 34 serbatoio 6261 piantate 54
+  fase 15 fine 272.5 raccolti 2 mosse 6 attesa 0 power 7969.33
+  fase 14 fine 273.65 raccolti 7 mosse 26 attesa 0 power 8024.11
+  fase 13 fine 274.82 raccolti 9 mosse 24 attesa 0 power 8094.89
+  fase 12 fine 276.01 raccolti 8 mosse 26 attesa 0 power 8157.69
+  fase 11 fine 277.12 raccolti 7 mosse 25 attesa 0 power 8212.66
+  fase 10 fine 278.03 raccolti 6 mosse 20 attesa 0 power 8259.64
+  fase 9 fine 278.58 raccolti 6 mosse 9 attesa 0 power 8307.26
+  fase 8 fine 279.21 raccolti 4 mosse 14 attesa 0 power 8338.45
+  fase 7 fine 279.78 raccolti 5 mosse 11 attesa 0 power 8378.04
+ciclo 20 inizio 279.78 power 8378.04
+  semina fine 284.52 durata 4.74 valori 7..15 14 5 7 3 7 9 4 8 7 acqua 21 serbatoio 6555 piantate 54
+  fase 15 fine 286.01 raccolti 7 mosse 15 attesa 0.71 power 8427.56
+  fase 14 fine 287.08 raccolti 8 mosse 22 attesa 0.01 power 8490.55
+  fase 13 fine 287.74 raccolti 4 mosse 15 attesa 0 power 8521.94
+  fase 12 fine 288.84 raccolti 9 mosse 22 attesa 0 power 8592.73
+  fase 11 fine 289.72 raccolti 7 mosse 18 attesa 0 power 8647.91
+  fase 10 fine 290.21 raccolti 3 mosse 11 attesa 0 power 8671.31
+  fase 9 fine 291.2 raccolti 7 mosse 21 attesa 0 power 8726.48
+  fase 8 fine 291.93 raccolti 5 mosse 16 attesa 0 power 8765.66
+  fase 7 fine 292.53 raccolti 4 mosse 13 attesa 0 power 8797.06
+ciclo 21 inizio 292.53 power 8797.06
+  semina fine 297.74 durata 5.2 valori 7..15 11 9 9 3 7 4 7 8 6 acqua 35 serbatoio 6859 piantate 54
+  fase 15 fine 300.04 raccolti 6 mosse 17 attesa 1.49 power 8837.39
+  fase 14 fine 301.14 raccolti 8 mosse 23 attesa 0 power 8900.35
+  fase 13 fine 302.12 raccolti 7 mosse 21 attesa 0 power 8955.35
+  fase 12 fine 302.68 raccolti 4 mosse 12 attesa 0 power 8986.75
+  fase 11 fine 303.79 raccolti 7 mosse 25 attesa 0 power 9041.72
+  fase 10 fine 304.38 raccolti 3 mosse 14 attesa 0 power 9065.13
+  fase 9 fine 305.77 raccolti 9 mosse 31 attesa 0 power 9135.72
+  fase 8 fine 306.84 raccolti 9 mosse 21 attesa 0 power 9206.5
+  fase 7 fine 307.02 raccolti 1 mosse 4 attesa 0 power 9214.29
+ciclo 22 inizio 307.02 power 9214.29
+  semina fine 311.89 durata 4.87 valori 7..15 15 9 2 5 5 6 4 10 8 acqua 25 serbatoio 7196 piantate 54
+  fase 15 fine 314.59 raccolti 8 mosse 28 attesa 1.44 power 9270.8
+  fase 14 fine 315.95 raccolti 10 mosse 29 attesa 0 power 9349.38
+  fase 13 fine 316.62 raccolti 4 mosse 15 attesa 0 power 9380.57
+  fase 12 fine 317.49 raccolti 6 mosse 19 attesa 0 power 9427.75
+  fase 11 fine 318.23 raccolti 5 mosse 16 attesa 0 power 9466.94
+  fase 10 fine 319 raccolti 5 mosse 17 attesa 0 power 9506.33
+  fase 9 fine 319.42 raccolti 2 mosse 10 attesa 0 power 9521.73
+  fase 8 fine 320.71 raccolti 9 mosse 28 attesa 0 power 9592.53
+  fase 7 fine 321.31 raccolti 5 mosse 12 attesa 0 power 9631.92
+ciclo 23 inizio 321.31 power 9631.92
+  semina fine 326.38 durata 5.07 valori 7..15 18 3 9 9 2 7 8 2 6 acqua 31 serbatoio 7536 piantate 54
+  fase 15 fine 328.23 raccolti 6 mosse 19 attesa 0.97 power 9672.81
+  fase 14 fine 328.59 raccolti 2 mosse 8 attesa 0 power 9688.63
+  fase 13 fine 329.78 raccolti 8 mosse 26 attesa 0 power 9751.42
+  fase 12 fine 330.69 raccolti 7 mosse 19 attesa 0 power 9806.39
+  fase 11 fine 331.08 raccolti 2 mosse 9 attesa 0 power 9822
+  fase 10 fine 332.34 raccolti 9 mosse 27 attesa 0 power 9892.76
+  fase 9 fine 333.44 raccolti 9 mosse 22 attesa 0 power 9963.58
+  fase 8 fine 333.96 raccolti 3 mosse 12 attesa 0 power 9987.14
+fine 334.25 cicli 24 raccolti 1291 attesa 20.65 azioni acqua 819 power 10010.75

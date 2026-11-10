@@ -1,0 +1,189 @@
+# Classifica Dinosaur: 33.488.928 ossa = un serpente che riempie il 32x32.
+GOAL = 33488928
+MARGIN_MIN = 2
+MARGIN_MAX = 12
+
+S = get_world_size()
+M = S * S
+APPLE = Entities.Apple
+DIRS = [North, East, South, West]
+DX = {North: 0, East: 1, South: 0, West: -1}
+DY = {North: 1, East: 0, South: -1, West: 0}
+
+
+def build_cycle(N):
+	d = []
+	for i in range(N - 1):
+		d.append(East)
+	for k in range(N - 1):
+		if k == 0:
+			for i in range(N - 1):
+				d.append(North)
+		elif k % 2 == 0:
+			for i in range(N - 2):
+				d.append(North)
+		else:
+			for i in range(N - 2):
+				d.append(South)
+		d.append(West)
+	for i in range(N - 1):
+		d.append(South)
+	return d
+
+
+CYC = build_cycle(S)
+POS = []
+IDX = {}
+x = 0
+y = 0
+for k in range(M):
+	POS.append((x, y))
+	IDX[(x, y)] = k
+	x += DX[CYC[k]]
+	y += DY[CYC[k]]
+
+PX = []
+PY = []
+for k in range(M):
+	PX.append(POS[k][0])
+	PY.append(POS[k][1])
+
+NB = []
+for k in range(M):
+	px = PX[k]
+	py = PY[k]
+	lst = []
+	for d in DIRS:
+		nx = px + DX[d]
+		ny = py + DY[d]
+		if nx >= 0 and nx < S and ny >= 0 and ny < S:
+			lst.append((d, (nx, ny), IDX[(nx, ny)]))
+	NB.append(lst)
+
+
+def goto(tx, ty):
+	dx = (tx - get_pos_x()) % S
+	if dx <= S // 2:
+		for _ in range(dx):
+			move(East)
+	else:
+		for _ in range(S - dx):
+			move(West)
+	dy = (ty - get_pos_y()) % S
+	if dy <= S // 2:
+		for _ in range(dy):
+			move(North)
+	else:
+		for _ in range(S - dy):
+			move(South)
+
+
+def prep_column(cx):
+	goto(cx, 0)
+	for _ in range(S):
+		if get_ground_type() != Grounds.Soil:
+			till()
+		if get_entity_type() != None:
+			harvest()
+		move(North)
+
+
+def make_prep(cx):
+	def fn():
+		prep_column(cx)
+	return fn
+
+
+def prep_field():
+	handles = []
+	for cx in range(1, S):
+		h = spawn_drone(make_prep(cx))
+		if h != None:
+			handles.append(h)
+	prep_column(0)
+	for h in handles:
+		wait_for(h)
+
+
+def run_snake():
+	goto(0, 0)
+	change_hat(Hats.Dinosaur_Hat)
+	if get_entity_type() != APPLE:
+		change_hat(Hats.Straw_Hat)
+		return 0
+
+	body = [0]
+	occ = set()
+	occ.add(0)
+	h = 0
+	L = 1
+	t_idx = -1
+	tx = 0
+	ty = 0
+
+	while L < M:
+		on_apple = get_entity_type() == APPLE
+		if on_apple:
+			tp = measure()
+			if tp == None:
+				t_idx = -1
+			else:
+				t_idx = IDX[tp]
+				tx = tp[0]
+				ty = tp[1]
+		elif t_idx == h:
+			t_idx = -1
+
+		nh = (h + 1) % M
+		choice = CYC[h]
+		if t_idx >= 0:
+			d_apple = (t_idx - h) % M
+			if d_apple > 1:
+				if L > 1:
+					d_tail = (body[0] - h) % M
+				else:
+					d_tail = M
+				lim = d_tail - (MARGIN_MIN + (MARGIN_MAX - MARGIN_MIN) * L // M)
+				if lim > d_apple + 1:
+					lim = d_apple + 1
+				best_dist = abs(PX[nh] - tx) + abs(PY[nh] - ty)
+				best_dd = 1
+				for d, n, ni in NB[h]:
+					dd = (ni - h) % M
+					if dd > 1 and dd < lim and not (ni in occ):
+						dist = abs(PX[ni] - tx) + abs(PY[ni] - ty)
+						if dist < best_dist or (dist == best_dist and dd > best_dd):
+							best_dist = dist
+							best_dd = dd
+							choice = d
+							nh = ni
+
+		if not move(choice):
+			moved = False
+			for d, n, ni in NB[h]:
+				if not (ni in occ) and move(d):
+					nh = ni
+					moved = True
+					break
+			if not moved:
+				break
+
+		h = nh
+		body.append(h)
+		occ.add(h)
+		if on_apple:
+			L += 1
+			if t_idx < 0:
+				break
+		else:
+			occ.remove(body.pop(0))
+
+	change_hat(Hats.Straw_Hat)
+	return L
+
+
+clear()
+while num_items(Items.Bone) < GOAL:
+	prep_field()
+	if run_snake() < 2:
+		break

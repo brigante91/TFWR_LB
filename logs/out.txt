@@ -1,0 +1,19 @@
+pos 0 0 S 32
+A (Entities.Tree,(31,2))
+A (Entities.Tree,(31,30))
+A (Entities.Tree,(31,31))
+A (Entities.Carrot,(31,2))
+A (Entities.Tree,(31,30))
+A (Entities.Carrot,(2,31))
+A (Entities.Tree,(0,31))
+A (Entities.Carrot,(31,0))
+P1 (Entities.Tree,(1,30))
+P2 (Entities.Tree,(1,30))
+tick plant fallito 200
+P3 (Entities.Carrot,(0,3))
+P4 (Entities.Bush,(31,2))
+P5 (Entities.Bush,(31,0))
+tick harvest su vuoto 1
+P6 (Entities.Bush,(1,2))
+P7 (Entities.Tree,(1,1))
+fine 1.6

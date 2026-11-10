@@ -1,0 +1,19 @@
+# lb_pumpkins_v2.py, run del 6 nov 2026, tempo 8:06. Stampe del drone principale (colonna 0):
+# "colonna finita" = fine del riempimento della colonna 0; "campo completo" = measure()==measure(West);
+# "acqua" = scorta nel serbatoio al momento del raccolto. Ciclo medio ~7.5 s.
+ciclo 1 colonna finita a 9.6 campo completo a 11.54 raccolto 3145728 acqua 53
+ciclo 2 colonna finita a 21.01 campo completo a 21.86 raccolto 3145728 acqua 68
+ciclo 3 colonna finita a 30.03 campo completo a 31.71 raccolto 3145728 acqua 70
+ciclo 4 colonna finita a 38.68 campo completo a 41.54 raccolto 3145728 acqua 62
+ciclo 5 colonna finita a 49.22 campo completo a 51.6 raccolto 3145728 acqua 77
+ciclo 6 colonna finita a 60.32 campo completo a 60.32 raccolto 3145728 acqua 70
+ciclo 7 colonna finita a 66.36 campo completo a 70.63 raccolto 3145728 acqua 92
+ciclo 8 colonna finita a 76.51 campo completo a 80.21 raccolto 3145728 acqua 82
+ciclo 9 colonna finita a 85.3 campo completo a 88.56 raccolto 3145728 acqua 62
+ciclo 10 colonna finita a 93.57 campo completo a 95.47 raccolto 3145728 acqua 42
+ciclo 20 colonna finita a 167.51 campo completo a 168.92 raccolto 3145728 acqua 74
+ciclo 30 colonna finita a 241.4 campo completo a 244.23 raccolto 3145728 acqua 112
+ciclo 40 colonna finita a 315.06 campo completo a 316.9 raccolto 3145728 acqua 78
+ciclo 50 colonna finita a 385.97 campo completo a 386.77 raccolto 3145728 acqua 91
+ciclo 60 colonna finita a 458.07 campo completo a 458.58 raccolto 3145728 acqua 81
+ciclo 64 colonna finita a 484.56 campo completo a 486.34 raccolto 3145728 acqua 73
