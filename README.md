@@ -5,19 +5,23 @@ Stato dei record al 9-10 nov 2026, dalle note di lavoro. Nomi ed esiti sono quel
 
 ## Record principali
 
-| Classifica | Miglior tempo | Posizione | Script |
-|---|---|---|---|
-| Hay (dense) | 1:48.174 | #12 | `scripts/lb_hay_dense.py` |
-| Hay (micro) | 1:48.943 | #26 | `scripts/lb_hay_micro.py` |
-| Hay Single | 2:51.329 | #67 | `scripts/lb_hay_single_v2.py` |
-| Cactus | 0:48.174 | #393 | `scripts/lb_cactus_v2.py` |
-| Sunflowers (multi) | 2:28.5 (v11) | — | `scripts/lb_sunflowers_v11.py` |
-| Sunflowers Single | 4:23.733 (v10) | — | `scripts/lb_sunflowers_single_v10.py` |
-| Rice | 1:49.327 | #1 (v19) | `sims/haysim/rice/v4.py` (sim) + `scripts/lb_rice_multi_v18.py` (ultimo script presente; la v19 non è nella raccolta) |
-| Rice Single | 2:26 | — | `scripts/lb_rice_single.py` |
-| Bamboo Single | 3:17 (v2) | — | `scripts/lb_bamboo_single.py` (v1 presente in `lb_bamboo_single_v1.py`) |
-| Treasure Map | 25.0 s (v4) | #1 reale 19.4 s | `scripts/lb_treasure_v4.py` |
-| Pumpkins | 7:01 (v4) | — | `scripts/lb_pumpkins_v4.py` |
+Rank dal profilo (SteamID 76561198129401400), dati XML ufficiali al 10 nov 2026. Elenco completo di tutte le 30 classifiche: [`leaderboards/RANKS.md`](leaderboards/RANKS.md).
+
+| Classifica | Rank | Script |
+|---|---|---|
+| Rice (multi) | #1 | `scripts/lb_rice_multi_v18.py` (ultimo presente; v19 solo nelle note) |
+| Rice Single | #4 | `scripts/lb_rice_single.py` |
+| Sunflowers (multi) | #2 | `scripts/lb_sunflowers_v11.py` |
+| Sunflowers Single | #8 | `scripts/lb_sunflowers_single_v10.py` |
+| Hay (multi) | #8 (1:47.99) | `scripts/lb_hay_dense.py` |
+| Hay Single | #62 | `scripts/lb_hay_single_v2.py` |
+| Treasure Map | #6 | `scripts/lb_treasure_v4.py` |
+| Bamboo Single | #9 | `scripts/lb_bamboo_single.py` |
+| Pumpkins (multi) | #81 | `scripts/lb_pumpkins_v4.py` |
+| Cactus (multi) | #115 | `scripts/lb_cactus_v2.py` |
+| Fastest Reset | #2282 | — |
+
+Non in classifica (19): Bamboo multi, Cactus single, Carrots (multi/single), Dinosaur, Dynamite (multi/single), Fastest Underground Reset, Maze (multi/single), Mushrooms (multi/single), Ores (multi/single), Pumpkins Single, Pyramids (multi/single), Wood (multi/single).
 
 Nota: alcune versioni citate nelle note (es. rice v19, bamboo v2) non sono nella raccolta come file separato; per quelle la nota resta il riferimento.
 
@@ -29,6 +33,7 @@ Nota: alcune versioni citate nelle note (es. rice v19, bamboo v2) non sono nella
   - `dense/` — generatore e ottimizzatore di layout fieno
   - `hay_pred/` — test di predizione RNG per il fieno
   - `haysingle/` — simulazioni e percorsi per Hay Single
+- `leaderboards/` — XML ufficiali Steam delle 30 classifiche (`xml/`) e riepilogo rank (`RANKS.md`).
 - `logs/` — log di run in gioco (pumpkins, girasoli).
 - `notes/memory/` — note di progetto per classifica (stato, regole, lezioni).
 - `notes/rng_predictor/` — findings, audit, piani e verifiche (`FINDINGS.md`, `AUDIT_BUG.md`, `PIANO_LB.md`, `EXPLOIT_REPORT.md`, …).
